@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Activity, BookOpen, Check, ChevronRight, Code2, Copy, Download, Eye, FileText,
   Globe2, Heart, Home, Languages, LayoutGrid, Menu, Moon, Package, Palette,
-  Search, SlidersHorizontal, Sparkles, Star, Type, Upload, Variable, X, Zap
+  Search, SlidersHorizontal, Sparkles, Star, Sun, Type, Upload, Variable, X, Zap
 } from "lucide-react";
 import { Font, categories, fonts, googleCssUrl, scripts } from "../lib/fonts";
 import opentype from "opentype.js";
@@ -45,6 +45,7 @@ export default function FontAtlasApp() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [uploadedFont, setUploadedFont] = useState<{ name: string; font: opentype.Font } | null>(null);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     try { setFavorites(JSON.parse(localStorage.getItem("fontatlas:favorites") || "[]")); } catch {}
@@ -52,6 +53,16 @@ export default function FontAtlasApp() {
   useEffect(() => { localStorage.setItem("fontatlas:favorites", JSON.stringify(favorites)); }, [favorites]);
   useEffect(() => { loadGoogleFonts(fonts); }, []);
   useEffect(() => { if (!selected.weights.includes(weight)) setWeight(selected.weights[Math.min(3, selected.weights.length-1)]); }, [selected, weight]);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("fontatlas:theme") as "light" | "dark" | null;
+      if (saved) setTheme(saved);
+    } catch {}
+  }, []);
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("fontatlas:theme", theme);
+  }, [theme]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -115,7 +126,7 @@ export default function FontAtlasApp() {
           <button onClick={()=>nav("api")}>Resources</button>
         </nav>
         <div className="top-search"><Search size={15}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search fonts, designers, or tags..." /></div>
-        <button className="icon-btn" aria-label="Theme"><Moon size={16}/></button>
+        <button className="icon-btn" aria-label="Toggle theme" onClick={()=>setTheme(t=>t==="light"?"dark":"light")}>{theme==="light"?<Moon size={16}/>:<Sun size={16}/>}</button>
       </header>
 
       {mobileOpen && <div className="modal-backdrop" onClick={()=>setMobileOpen(false)}><div className="modal" onClick={e=>e.stopPropagation()}><button className="icon-btn" onClick={()=>setMobileOpen(false)}><X size={16}/></button><div style={{marginTop:15}}>{(["home","fonts","languages","playground","tools","api"] as View[]).map(v=><button key={v} className="side-item" onClick={()=>nav(v)}>{v}</button>)}</div></div></div>}
