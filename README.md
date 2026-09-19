@@ -26,16 +26,11 @@
 
 - [What is FontAtlas?](#what-is-fontatlas)
 - [Key Features](#key-features)
-- [Quick Start](#quick-start)
-  - [Prerequisites](#prerequisites)
-  - [Run Locally](#run-locally)
-  - [Production Build](#production-build)
 - [Deploy to Vercel](#deploy-to-vercel)
 - [Architecture](#architecture)
 - [API](#api)
 - [Extending the Catalog](#extending-the-catalog)
 - [Font Licensing](#font-licensing)
-- [Design Reference](#design-reference)
 - [License](#license)
 - [Developed By](#developed-by)
 
@@ -79,33 +74,6 @@ FontAtlas does not mirror or redistribute font files. The catalog links to offic
 - **License and source metadata** for every font
 - **Responsive UI** — desktop, tablet, and mobile
 - **Vercel-ready** — deploy in one click
-
----
-
-## Quick Start
-
-### Prerequisites
-
-- **Node.js 18+**
-- **npm** (or yarn/pnpm)
-
-### Run Locally
-
-```bash
-git clone https://github.com/jojin1709/fontatlas.git
-cd fontatlas
-npm install
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### Production Build
-
-```bash
-npm run build
-npm start
-```
 
 ---
 
