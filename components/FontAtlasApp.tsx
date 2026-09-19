@@ -57,7 +57,7 @@ function FontDetail({ font, text, onTextChange, weight, onWeightChange, size, on
         </div>
       </div>
       <div className="font-detail-preview">
-        <div className="font-detail-preview-text" style={{ fontFamily: `'${font.family}', sans-serif`, fontWeight, fontSize: `${Math.min(size, 64)}px`, letterSpacing: `${spacing}px` }}>{text || sampleText}</div>
+        <div className="font-detail-preview-text" style={{ fontFamily: `'${font.family}', sans-serif`, fontWeight: weight, fontSize: `${Math.min(size, 64)}px`, letterSpacing: `${spacing}px` }}>{text || sampleText}</div>
       </div>
       <div className="font-detail-controls">
         <div className="control-group"><input className="control-input" placeholder="Type custom text..." value={text} onChange={(e) => onTextChange(e.target.value)} /></div>
