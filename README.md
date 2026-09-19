@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./public/favicon.svg" alt="FontAtlas" width="80">
+
 # FontAtlas
 
 ### A clean, no-login font discovery and developer integration platform for the modern web.
