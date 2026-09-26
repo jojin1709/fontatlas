@@ -69,15 +69,37 @@ export const fonts: Font[] = [
   { slug:"noto-sans-telugu", family:"Noto Sans Telugu", designer:"Google", category:"Sans Serif", tags:["telugu","multilingual","unicode","ui"], scripts:["Telugu"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Telugu", googleFamily:g("Noto Sans Telugu"), description:"A Telugu sans-serif family from the Noto collection." },
   { slug:"ibm-plex-sans", family:"IBM Plex Sans", designer:"Mike Abbink", category:"Sans Serif", tags:["corporate","technical","ui","professional"], scripts:["Latin","Greek","Cyrillic","Arabic","Hebrew"], weights:[100,200,300,400,500,600,700], variable:false, styles:["normal","italic"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/IBM+Plex+Sans", googleFamily:g("IBM Plex Sans"), description:"A corporate type family designed for clarity across technical contexts." },
   { slug:"source-code-pro", family:"Source Code Pro", designer:"Paul D. Hunt", category:"Monospace", tags:["code","developer","terminal","adobe"], scripts:["Latin","Greek","Cyrillic"], weights:[200,300,400,500,600,700,800,900], variable:true, styles:["normal","italic"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Source+Code+Pro", googleFamily:g("Source Code Pro"), description:"Adobe's open-source monospaced typeface for coding environments." },
-  { slug:"quicksand", family:"Quicksand", designer:"Andrew Paglinawan", category:"Sans Serif", tags:["rounded","friendly","geometric","display"], scripts:["Latin","Vietnamese"], weights:[300,400,500,600,700], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Quicksand", googleFamily:g("Quicksand"), description:"A rounded geometric sans with a light, approachable feel." }
+  { slug:"quicksand", family:"Quicksand", designer:"Andrew Paglinawan", category:"Sans Serif", tags:["rounded","friendly","geometric","display"], scripts:["Latin","Vietnamese"], weights:[300,400,500,600,700], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Quicksand", googleFamily:g("Quicksand"), description:"A rounded geometric sans with a light, approachable feel." },
+  { slug:"noto-sans-bengali", family:"Noto Sans Bengali", designer:"Google", category:"Sans Serif", tags:["bengali","multilingual","unicode","ui"], scripts:["Bengali"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Bengali", googleFamily:g("Noto Sans Bengali"), description:"A Bengali sans-serif family designed for clear digital reading." },
+  { slug:"noto-sans-gujarati", family:"Noto Sans Gujarati", designer:"Google", category:"Sans Serif", tags:["gujarati","multilingual","unicode","ui"], scripts:["Gujarati"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Gujarati", googleFamily:g("Noto Sans Gujarati"), description:"A Gujarati sans-serif family in the Noto collection." },
+  { slug:"noto-sans-gurmukhi", family:"Noto Sans Gurmukhi", designer:"Google", category:"Sans Serif", tags:["gurmukhi","punjabi","multilingual","unicode"], scripts:["Gurmukhi"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Gurmukhi", googleFamily:g("Noto Sans Gurmukhi"), description:"A Gurmukhi sans-serif family designed for high legibility." },
+  { slug:"noto-sans-thai", family:"Noto Sans Thai", designer:"Google", category:"Sans Serif", tags:["thai","multilingual","unicode","ui"], scripts:["Thai"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Thai", googleFamily:g("Noto Sans Thai"), description:"A Thai sans-serif family suitable for user interfaces." },
+  { slug:"noto-sans-georgian", family:"Noto Sans Georgian", designer:"Google", category:"Sans Serif", tags:["georgian","multilingual","unicode","ui"], scripts:["Georgian"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Georgian", googleFamily:g("Noto Sans Georgian"), description:"A Georgian sans-serif family covering the complete Georgian script." },
+  { slug:"noto-sans-armenian", family:"Noto Sans Armenian", designer:"Google", category:"Sans Serif", tags:["armenian","multilingual","unicode","ui"], scripts:["Armenian"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Armenian", googleFamily:g("Noto Sans Armenian"), description:"An Armenian sans-serif family designed for interface harmony." }
 ];
 
 export const categories = ["Sans Serif","Serif","Slab Serif","Monospace","Display","Handwriting","Script","Blackletter","Pixel"];
-export const scripts = ["Latin","Greek","Cyrillic","Arabic","Hebrew","Devanagari","Bengali","Gujarati","Gurmukhi","Kannada","Malayalam","Tamil","Telugu","Thai","Georgian","Armenian"];
+export const scripts = ["Latin","Greek","Cyrillic","Arabic","Hebrew","Devanagari","Bengali","Gujarati","Gurmukhi","Kannada","Malayalam","Tamil","Telugu","Thai","Georgian","Armenian","Vietnamese"];
 
 export function getFont(slug: string) { return fonts.find((f) => f.slug === slug); }
 
+export function getFontFallback(category: string): string {
+  switch (category) {
+    case "Serif":
+    case "Slab Serif":
+      return "serif";
+    case "Monospace":
+      return "monospace";
+    case "Handwriting":
+    case "Script":
+      return "cursive";
+    default:
+      return "sans-serif";
+  }
+}
+
 export function googleCssUrl(font: Font, weights?: number[]) {
+  if (!font.googleFamily) return "";
   const selected = weights?.length ? weights : font.weights;
   const unique = [...new Set(selected)].sort((a,b)=>a-b);
   const axis = unique.join(";");
