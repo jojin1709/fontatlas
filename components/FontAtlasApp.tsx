@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Activity,
-  AlignLeft,
   AlignCenter,
+  AlignLeft,
   AlignRight,
   BookOpen,
   Check,
@@ -59,28 +59,80 @@ type View =
   | "favorites";
 type CodeTab = "CDN" | "CSS" | "HTML" | "Tailwind" | "Next.js" | "React";
 
-const categoryIcons: Record<string, string> = {
-  "Sans Serif": "Aa",
-  Serif: "Tt",
-  Monospace: "</>",
-  Display: "Ab",
-  Handwriting: "✍",
-  Script: "Ss",
-  "Slab Serif": "Tt",
-  Blackletter: "¶",
-  Pixel: "▪",
+const categoryShowcase = [
+  { name: "Sans Serif", specimen: "Aa", fontFam: "'Inter', sans-serif" },
+  { name: "Serif", specimen: "Aa", fontFam: "'Playfair Display', serif" },
+  { name: "Monospace", specimen: "Aa", fontFam: "'JetBrains Mono', monospace" },
+  { name: "Display", specimen: "AA", fontFam: "'Bebas Neue', cursive" },
+  { name: "Handwriting", specimen: "Aa", fontFam: "'Caveat', cursive" },
+  { name: "Script", specimen: "Aa", fontFam: "'Great Vibes', cursive" },
+  { name: "Slab Serif", specimen: "Da", fontFam: "'Alfa Slab One', serif" },
+  { name: "Variable", specimen: "Aa", fontFam: "'Plus Jakarta Sans', sans-serif" },
+  { name: "Multilingual", specimen: "അA", fontFam: "'Noto Sans Malayalam', sans-serif" },
+  { name: "Pixel", specimen: "▪▪", fontFam: "'Press Start 2P', monospace" },
+];
+
+const fontTaglines: Record<string, string> = {
+  inter: "Clean. Modern. Versatile.",
+  roboto: "Modern and neutral.",
+  poppins: "Geometric and friendly.",
+  montserrat: "Urban, architectural, bold.",
+  manrope: "Soft contemporary grotesque.",
+  "dm-sans": "Low-contrast, clear UI type.",
+  outfit: "Expressive headlines & startup UI.",
+  "plus-jakarta-sans": "Editorial warmth with digital clarity.",
+  lato: "Humanist, warm, professional.",
+  "nunito-sans": "Softly rounded, approachable feel.",
+  "open-sans": "Optimized legibility everywhere.",
+  "source-sans-3": "Workhorse text for dense interfaces.",
+  geist: "Precision-tuned for developer tools.",
+  archivo: "Strong utility-oriented grotesque.",
+  rubik: "Friendly rounded corners.",
+  "work-sans": "Balanced workhorse for web interfaces.",
+  "roboto-slab": "Sturdy editorial presence.",
+  "playfair-display": "Elegant and stylish.",
+  merriweather: "Comfortable digital reading serif.",
+  "libre-baskerville": "Classic book revival for screen.",
+  lora: "Calligraphic editorial charm.",
+  "cormorant-garamond": "High-contrast luxury fashion serif.",
+  bitter: "Crisp slab serif for reading.",
+  "dm-mono": "Monospace with character.",
+  "jetbrains-mono": "Code-focused developer monospace.",
+  "fira-code": "Programming ligatures and clarity.",
+  "space-mono": "Technical editorial fixed-width.",
+  orbitron: "Futuristic tech headlines.",
+  "bebas-neue": "All-caps punchy poster condensed.",
+  anton: "High-impact poster grotesque.",
+  oswald: "Classic gothic reimagined.",
+  "archivo-black": "Ultra-heavy headline display.",
+  pacifico: "Warm relaxed brush lettering.",
+  "great-vibes": "Beautiful handwriting.",
+  caveat: "Casual personal notes.",
+  "dancing-script": "Lively informal script.",
+  "permanent-marker": "Bold casual street marker.",
+  "press-start-2p": "Classic arcade bitmap nostalgia.",
+  silkscreen: "Crisp UI pixel display.",
+  unifrakturcook: "Traditional gothic blackletter.",
+  comfortaa: "Gentle rounded modern geometry.",
+  "alfa-slab-one": "Heavy retro advertising slab.",
+  "archivo-narrow": "Space-saving compact headlines.",
+  "noto-sans-malayalam": "Comprehensive Malayalam Unicode.",
+  "noto-serif-malayalam": "Editorial Malayalam reading serif.",
+  "noto-sans-devanagari": "Complete Devanagari Unicode.",
+  "noto-sans-tamil": "Extensive Tamil script coverage.",
+  "noto-sans-kannada": "Harmonious Kannada typeface.",
+  "noto-sans-telugu": "Clear Telugu digital reading.",
+  "ibm-plex-sans": "Engineered technical brand clarity.",
+  "source-code-pro": "Open-source developer staple.",
+  quicksand: "Light, friendly geometric rhythm.",
 };
 
-const popularFonts = ["Inter", "Poppins", "Roboto", "Montserrat", "Lato", "Open Sans"];
-const sampleText = "The quick brown fox jumps over the lazy dog.";
-
-// Script-specific sample glyph sets for rich inspection
 const scriptGlyphs: Record<string, string> = {
   Malayalam: "അ ആ ഇ ഈ ഉ ഊ ഋ എ ഏ ഐ ഒ ഓ ഔ ക ഖ ഗ ഘ ങ ച ഛ ജ ഝ ഞ ട ഠ ഡ ഢ ണ ത ഥ ദ ധ ന പ ഫ ബ ഭ മ യ ര ല വ ശ ഷ സ ഹ ള ഴ റ 0 1 2 3 4 5 6 7 8 9",
   Devanagari: "अ आ इ ई उ ऊ ऋ ए ऐ ओ औ क ख ग घ ङ च छ ज झ ञ ट ठ ड ढ ण त थ द ध न प फ ब भ म य र ल व श ष स ह ० १ २ ३ ४ ५ ६ ७ ८ ९",
   Tamil: "அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ க ங ச ஞ ட ண த ந ப ம ய ர ல வ ழ ள ற ன ௦ ௧ ௨ ௩ ௪ ௫ ௬ ௭ ௮ ௯",
   Kannada: "ಅ ಆ ಇ ಈ ಉ ಊ ಋ ಎ ಏ ಐ ಒ ಓ ಔ ಕ ಖ ಗ ಘ ಙ ಚ ಛ ಜ ಝ ಞ ಟ ಠ ಡ ಢ ಣ ತ ಥ ದ ಧ ನ ಪ ಫ ಬ ಭ ಮ ಯ ರ ಲ ವ ಶ ಷ ಸ ಹ ಳ ೦ ೧ ೨ ೩ ೪ ೫ ೬ ೭ ೮ ೯",
-  Telugu: "అ ఆ ఇ ఈ ఉ ఊ ఋ ఎ ఏ ఐ ఒ ఓ ఔ క ఖ గ ఘ ఙ చ ఛ జ ఝ ఞ ట ఠ డ ఢ ణ త థ ద ధ న ప ఫ బ భ మ య ర ల వ శ ష స హ ళ ౦ ౧ ౨ ౩ ౪ ౫ ౬ ౭ ౮ ౯",
+  Telugu: "అ ఆ ఇ ఈ ఉ ఊ ఋ ఎ ఏ ఐ ఒ ఓ ఔ క ఖ గ ఘ ఙ చ ఛ జ ఝ ఞ ట ఠ డ ఢ ణ త థ ద ధ న ప ఫ బ ഭ మ య ర ల వ శ ష స హ ళ ౦ ౧ ౨ ౩ ౪ ౫ ౬ ౭ ౮ ౯",
   Bengali: "অ আ ই ঈ উ ঊ ঋ এ ঐ ও ঔ ক খ গ ঘ ঙ চ ছ জ ঝ ঞ ট ঠ ড ঢ ণ ত থ দ ধ ন প ফ ব ভ ম য র ল শ ষ স হ ০ ১ ২ ৩ ৪ ৫ ৬ ৭ ৮ ৯",
   Gujarati: "અ આ ઇ ઈ ઉ ઊ ઋ એ ઐ ઓ ઔ ક ખ ગ ઘ ઙ ચ છ જ ઝ ઞ ટ ઠ ડ ઢ ણ ત થ દ ધ ન પ ફ બ ભ મ ય ર લ વ શ ષ સ હ ૦ ૧ ૨ ૩ ૪ ૫ ૬ ૭ ૮ ૯",
   Gurmukhi: "ਅ ਆ ਇ ਈ ਉ ਊ ਏ ਐ ਓ ਔ ਕ ਖ ਗ ਘ ਙ ਚ ਛ ਜ ਝ ਞ ਟ ਠ ਡ ਢ ਣ ਤ ਥ ਦ ਧ ਨ ਪ ਫ ਬ ਭ ਮ ਯ ਰ ਲ ਵ ੜ ੦ ੧ ੨ ੩ ੪ ੫ ੬ ੭ ੮ ੯",
@@ -95,7 +147,9 @@ const scriptGlyphs: Record<string, string> = {
   Latin: "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9 ! @ # $ % & * ? /",
 };
 
-// Font loader tracking
+const popularFonts = ["Inter", "Poppins", "Roboto", "Montserrat", "Lato", "Open Sans"];
+const sampleText = "The quick brown fox jumps over the lazy dog.";
+
 const injectedFontLinks = new Set<string>();
 
 function ensureFontLoaded(font: Font) {
@@ -114,1108 +168,13 @@ function ensureFontLoaded(font: Font) {
   document.head.appendChild(link);
 }
 
-interface UploadedFontData {
-  fontObj: Font;
-  opentypeFont?: opentype.Font;
-  numGlyphs?: number;
-  unitsPerEm?: number;
-  ascender?: number;
-  descender?: number;
-  extractedGlyphs?: string[];
-}
-
-function FontCard({
-  font,
-  selected,
-  onSelect,
-  isFavorite,
-  onToggleFavorite,
-  isCompared,
-  onToggleCompare,
-}: {
-  font: Font;
-  selected: boolean;
-  onSelect: (f: Font) => void;
-  isFavorite: boolean;
-  onToggleFavorite: (s: string) => void;
-  isCompared: boolean;
-  onToggleCompare: (f: Font) => void;
-}) {
-  const fallback = getFontFallback(font.category);
-
-  return (
-    <div className={`font-card${selected ? " active" : ""}`} onClick={() => onSelect(font)}>
-      <div className="font-card-header">
-        <div>
-          <div className="font-card-name">{font.family}</div>
-          <div className="font-card-designer">{font.designer}</div>
-        </div>
-        <button
-          className={`font-card-fav${isFavorite ? " active" : ""}`}
-          title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleFavorite(font.slug);
-          }}
-        >
-          <Heart size={14} fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "currentColor"} />
-        </button>
-      </div>
-      <div
-        className="font-card-specimen"
-        style={{ fontFamily: `'${font.family}', ${fallback}` }}
-      >
-        Aa
-      </div>
-      <div className="font-card-meta">
-        <span className="font-card-badge">{font.weights.length} weights</span>
-        <span className="font-card-badge category">{font.category}</span>
-        {font.variable && <span className="font-card-badge variable">Variable</span>}
-      </div>
-      <button
-        className={`compare-btn${isCompared ? " active" : ""}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleCompare(font);
-        }}
-      >
-        {isCompared ? "Remove from Compare" : "Compare"}
-      </button>
-    </div>
-  );
-}
-
-function FontDetail({
-  font,
-  text,
-  onTextChange,
-  weight,
-  onWeightChange,
-  size,
-  onSizeChange,
-  spacing,
-  onSpacingChange,
-  codeTab,
-  onCodeTabChange,
-  isFavorite,
-  onToggleFavorite,
-  uploadedData,
-}: {
-  font: Font;
-  text: string;
-  onTextChange: (t: string) => void;
-  weight: number;
-  onWeightChange: (w: number) => void;
-  size: number;
-  onSizeChange: (s: number) => void;
-  spacing: number;
-  onSpacingChange: (s: number) => void;
-  codeTab: CodeTab;
-  onCodeTabChange: (t: CodeTab) => void;
-  isFavorite: boolean;
-  onToggleFavorite: (s: string) => void;
-  uploadedData?: UploadedFontData | null;
-}) {
-  const [copied, setCopied] = useState(false);
-  const [copiedGlyph, setCopiedGlyph] = useState<string | null>(null);
-  const [detailTab, setDetailTab] = useState("Preview");
-  const detailTabs = ["Preview", "Glyphs", "Languages", "Weights", "Metadata", "License"];
-
-  const fallback = getFontFallback(font.category);
-  const cssUrl = useMemo(() => googleCssUrl(font, [weight]), [font, weight]);
-
-  const codeSnippets: Record<CodeTab, string> = {
-    CDN: font.googleFamily ? `<link href="${cssUrl}" rel="stylesheet">` : `/* Local font: ${font.family} */`,
-    CSS: font.googleFamily
-      ? `@import url('${cssUrl}');\n\nbody {\n  font-family: '${font.family}', ${fallback};\n  font-weight: ${weight};\n}`
-      : `body {\n  font-family: '${font.family}', ${fallback};\n  font-weight: ${weight};\n}`,
-    HTML: font.googleFamily
-      ? `<link href="${cssUrl}" rel="stylesheet">\n\n<h1 style="font-family: '${font.family}', ${fallback}">${font.family}</h1>`
-      : `<h1 style="font-family: '${font.family}', ${fallback}">${font.family}</h1>`,
-    Tailwind: `// tailwind.config.js\nfontFamily: {\n  '${font.family.toLowerCase().replace(/\s+/g, "-")}': ['"${font.family}"', '${fallback}'],\n}`,
-    "Next.js": font.googleFamily
-      ? `import { ${font.family.replace(/[\s-]+/g, "")} } from 'next/font/google'\n\nconst font = ${font.family.replace(/[\s-]+/g, "")}({ weight: ['${weight}'], subsets: ['latin'] })`
-      : `// Use localFont from 'next/font/local'`,
-    React: `import '@fontsource/${font.family.toLowerCase().replace(/\s+/g, "-")}'`,
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(codeSnippets[codeTab]);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleGlyphClick = (ch: string) => {
-    navigator.clipboard.writeText(ch);
-    setCopiedGlyph(ch);
-    setTimeout(() => setCopiedGlyph(null), 1500);
-  };
-
-  // Determine glyph list
-  const glyphsList = useMemo(() => {
-    if (uploadedData?.extractedGlyphs && uploadedData.extractedGlyphs.length > 0) {
-      return uploadedData.extractedGlyphs;
-    }
-    for (const sc of font.scripts) {
-      if (scriptGlyphs[sc]) {
-        return scriptGlyphs[sc].split(" ");
-      }
-    }
-    return scriptGlyphs.Latin.split(" ");
-  }, [font, uploadedData]);
-
-  return (
-    <div className="font-detail open">
-      <div className="font-detail-header">
-        <div>
-          <div className="font-detail-name">{font.family}</div>
-          <div className="font-detail-designer">by {font.designer}</div>
-          <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-            {font.variable && <span className="font-card-badge variable">Variable</span>}
-            <span className="font-card-badge category">{font.category}</span>
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 6 }}>
-          {font.sourceUrl ? (
-            <button
-              className="btn btn-primary"
-              title="Open upstream source repository / specimen"
-              onClick={() => window.open(font.sourceUrl, "_blank", "noopener,noreferrer")}
-            >
-              <Download size={14} /> Source
-            </button>
-          ) : null}
-          <button
-            className={`btn btn-outline${isFavorite ? " active" : ""}`}
-            title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-            onClick={() => onToggleFavorite(font.slug)}
-            style={{ color: isFavorite ? "#ef4444" : undefined }}
-          >
-            <Heart size={14} fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "currentColor"} />
-          </button>
-        </div>
-      </div>
-
-      <div className="font-detail-preview">
-        <div
-          className="font-detail-preview-text"
-          style={{
-            fontFamily: `'${font.family}', ${fallback}`,
-            fontWeight: weight,
-            fontSize: `${Math.min(size, 64)}px`,
-            letterSpacing: `${spacing}px`,
-          }}
-        >
-          {text || sampleText}
-        </div>
-      </div>
-
-      <div className="font-detail-controls">
-        <div className="control-group">
-          <input
-            className="control-input"
-            placeholder="Type custom text..."
-            value={text}
-            onChange={(e) => onTextChange(e.target.value)}
-          />
-        </div>
-        <div className="control-row">
-          <div className="control-group">
-            <div className="control-label">
-              <span>Size</span>
-              <span className="control-value">{size}px</span>
-            </div>
-            <input
-              className="control-slider"
-              type="range"
-              min={12}
-              max={120}
-              value={size}
-              onChange={(e) => onSizeChange(Number(e.target.value))}
-            />
-          </div>
-          <div className="control-group">
-            <div className="control-label">
-              <span>Weight</span>
-              <span className="control-value">{weight}</span>
-            </div>
-            <input
-              className="control-slider"
-              type="range"
-              min={100}
-              max={900}
-              step={100}
-              value={weight}
-              onChange={(e) => onWeightChange(Number(e.target.value))}
-            />
-          </div>
-        </div>
-        <div className="control-group">
-          <div className="control-label">
-            <span>Spacing</span>
-            <span className="control-value">{spacing}px</span>
-          </div>
-          <input
-            className="control-slider"
-            type="range"
-            min={-5}
-            max={20}
-            value={spacing}
-            onChange={(e) => onSpacingChange(Number(e.target.value))}
-          />
-        </div>
-      </div>
-
-      <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--surface-border)" }}>
-        <div style={{ fontSize: "0.85rem", fontWeight: 700, marginBottom: 12 }}>Quick Integration Code</div>
-        <div className="code-box">
-          <div className="code-tabs">
-            {(Object.keys(codeSnippets) as CodeTab[]).map((t) => (
-              <button
-                key={t}
-                className={`code-tab${codeTab === t ? " active" : ""}`}
-                onClick={() => onCodeTabChange(t)}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-          <div className="code-content">
-            <pre>{codeSnippets[codeTab]}</pre>
-            <button className="code-copy" onClick={handleCopy} title="Copy snippet">
-              {copied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ padding: "20px 24px" }}>
-        <div className="code-tabs" style={{ marginBottom: 16 }}>
-          {detailTabs.map((t) => (
-            <button
-              key={t}
-              className={`code-tab${detailTab === t ? " active" : ""}`}
-              onClick={() => setDetailTab(t)}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-
-        {detailTab === "Preview" && (
-          <div>
-            <p
-              style={{
-                fontFamily: `'${font.family}', ${fallback}`,
-                fontSize: "1.1rem",
-                lineHeight: 1.8,
-                color: "var(--text-secondary)",
-              }}
-            >
-              {font.description}
-            </p>
-            <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {font.tags.map((tag) => (
-                <span key={tag} className="font-card-badge">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {detailTab === "Glyphs" && (
-          <div>
-            <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: 12 }}>
-              {copiedGlyph ? (
-                <span style={{ color: "#10b981", fontWeight: 600 }}>Copied "{copiedGlyph}" to clipboard!</span>
-              ) : (
-                <span>Click any character to copy to clipboard:</span>
-              )}
-            </div>
-            <div
-              style={{
-                fontFamily: `'${font.family}', ${fallback}`,
-                fontSize: "1.2rem",
-                lineHeight: 2,
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 6,
-                maxHeight: 220,
-                overflowY: "auto",
-                padding: "8px 0",
-              }}
-            >
-              {glyphsList.map((ch, i) => (
-                <button
-                  key={`${ch}-${i}`}
-                  onClick={() => handleGlyphClick(ch)}
-                  style={{
-                    display: "inline-block",
-                    width: 38,
-                    height: 38,
-                    textAlign: "center",
-                    lineHeight: "36px",
-                    border: "1px solid var(--surface-border)",
-                    borderRadius: 6,
-                    background: copiedGlyph === ch ? "var(--accent-light)" : "var(--surface)",
-                    color: copiedGlyph === ch ? "var(--accent)" : "var(--text-primary)",
-                    cursor: "pointer",
-                    fontSize: "1rem",
-                  }}
-                  title={`Unicode U+${ch.charCodeAt(0).toString(16).toUpperCase()}`}
-                >
-                  {ch}
-                </button>
-              ))}
-            </div>
-            {uploadedData?.numGlyphs && (
-              <div style={{ marginTop: 12, fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                OpenType Parsed: {uploadedData.numGlyphs} total glyphs | Units per EM: {uploadedData.unitsPerEm}
-              </div>
-            )}
-          </div>
-        )}
-
-        {detailTab === "Languages" && (
-          <div>
-            <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: 12 }}>
-              Supported writing systems and Unicode scripts:
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {font.scripts.map((s) => (
-                <span key={s} className="font-card-badge category">
-                  {s}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {detailTab === "Weights" && (
-          <div>
-            <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: 12 }}>
-              Click any weight to switch live preview:
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {font.weights.map((w) => (
-                <span
-                  key={w}
-                  className="font-card-badge"
-                  style={{
-                    cursor: "pointer",
-                    background: w === weight ? "var(--accent)" : "var(--bg)",
-                    color: w === weight ? "#fff" : "var(--text-secondary)",
-                    borderColor: w === weight ? "var(--accent)" : undefined,
-                  }}
-                  onClick={() => onWeightChange(w)}
-                >
-                  {w} {w === 400 ? "· Regular" : w === 700 ? "· Bold" : ""}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {detailTab === "Metadata" && (
-          <div style={{ fontSize: "0.85rem", lineHeight: 2, color: "var(--text-secondary)" }}>
-            <div>
-              <strong>Family:</strong> {font.family}
-            </div>
-            <div>
-              <strong>Designer:</strong> {font.designer}
-            </div>
-            <div>
-              <strong>Category:</strong> {font.category}
-            </div>
-            <div>
-              <strong>Weights:</strong> {font.weights.join(", ")}
-            </div>
-            <div>
-              <strong>Variable:</strong> {font.variable ? "Yes (Google Fonts wght axis)" : "No (Static Weights)"}
-            </div>
-            <div>
-              <strong>Scripts:</strong> {font.scripts.join(", ")}
-            </div>
-            {uploadedData && (
-              <>
-                <div>
-                  <strong>Units Per EM:</strong> {uploadedData.unitsPerEm ?? "N/A"}
-                </div>
-                <div>
-                  <strong>Ascender / Descender:</strong> {uploadedData.ascender} / {uploadedData.descender}
-                </div>
-              </>
-            )}
-          </div>
-        )}
-
-        {detailTab === "License" && (
-          <div style={{ fontSize: "0.85rem", lineHeight: 2, color: "var(--text-secondary)" }}>
-            <div>
-              <strong>License:</strong> {font.license}
-            </div>
-            <p style={{ marginTop: 6, fontSize: "0.8rem", color: "var(--text-muted)" }}>
-              FontAtlas provides upstream delivery from official CDN endpoints. Font files remain under their respective
-              author licenses.
-            </p>
-            {font.licenseUrl && (
-              <a
-                href={font.licenseUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "var(--accent)", textDecoration: "underline", display: "inline-block", marginTop: 8 }}
-              >
-                Read Official License Document →
-              </a>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function FontPairingsView({
-  fonts,
-  onSelectHeading,
-  onSelectBody,
-}: {
-  fonts: Font[];
-  onSelectHeading?: (f: Font) => void;
-  onSelectBody?: (f: Font) => void;
-}) {
-  const [hSlug, setHSlug] = useState(fonts[0]?.slug || "inter");
-  const [bSlug, setBSlug] = useState(fonts[1]?.slug || "lora");
-  const [headingText, setHeadingText] = useState("Build something remarkable.");
-  const [bodyText, setBodyText] = useState(
-    "Typography is the foundation of user interface design. Test your combinations before shipping to production."
-  );
-  const [headingSize, setHeadingSize] = useState(48);
-  const [copied, setCopied] = useState(false);
-
-  const h = fonts.find((f) => f.slug === hSlug) || fonts[0];
-  const b = fonts.find((f) => f.slug === bSlug) || fonts[1] || fonts[0];
-
-  useEffect(() => {
-    ensureFontLoaded(h);
-    ensureFontLoaded(b);
-  }, [h, b]);
-
-  const swapFonts = () => {
-    const temp = hSlug;
-    setHSlug(bSlug);
-    setBSlug(temp);
-  };
-
-  const copyPairingCss = () => {
-    const css = `/* FontAtlas Pairing: ${h.family} & ${b.family} */\nh1, h2, h3, h4 {\n  font-family: '${h.family}', ${getFontFallback(h.category)};\n}\n\nbody, p, span {\n  font-family: '${b.family}', ${getFontFallback(b.category)};\n}`;
-    navigator.clipboard.writeText(css);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Font Pairings</h2>
-          <p style={{ color: "var(--text-secondary)", marginBottom: 24, maxWidth: 540 }}>
-            Find the perfect harmonious headline and body font combination for your product.
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button className="btn btn-outline" onClick={swapFonts} title="Swap Heading and Body font">
-            <RefreshCw size={14} /> Swap Fonts
-          </button>
-          <button className="btn btn-primary" onClick={copyPairingCss} title="Copy CSS for this pair">
-            {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? "Copied CSS!" : "Copy Pairing CSS"}
-          </button>
-        </div>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
-        <div className="control-group">
-          <label className="control-label">
-            <span>Heading Font ({h.category})</span>
-          </label>
-          <select
-            className="control-input"
-            value={h.slug}
-            onChange={(e) => setHSlug(e.target.value)}
-          >
-            {fonts.map((f) => (
-              <option key={f.slug} value={f.slug}>
-                {f.family} ({f.category})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="control-group">
-          <label className="control-label">
-            <span>Body Font ({b.category})</span>
-          </label>
-          <select
-            className="control-input"
-            value={b.slug}
-            onChange={(e) => setBSlug(e.target.value)}
-          >
-            {fonts.map((f) => (
-              <option key={f.slug} value={f.slug}>
-                {f.family} ({f.category})
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
-        <div className="control-group">
-          <label className="control-label">
-            <span>Heading Text</span>
-          </label>
-          <input
-            className="control-input"
-            value={headingText}
-            onChange={(e) => setHeadingText(e.target.value)}
-            placeholder="Headline copy..."
-          />
-        </div>
-        <div className="control-group">
-          <label className="control-label">
-            <span>Heading Size ({headingSize}px)</span>
-          </label>
-          <input
-            className="control-slider"
-            type="range"
-            min={24}
-            max={72}
-            value={headingSize}
-            onChange={(e) => setHeadingSize(Number(e.target.value))}
-          />
-        </div>
-      </div>
-
-      <div
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--surface-border)",
-          borderRadius: "var(--radius-lg)",
-          padding: 40,
-        }}
-      >
-        <div
-          style={{
-            fontFamily: `'${h.family}', ${getFontFallback(h.category)}`,
-            fontSize: `${headingSize}px`,
-            fontWeight: 700,
-            lineHeight: 1.15,
-            marginBottom: 20,
-          }}
-        >
-          {headingText}
-        </div>
-        <p
-          style={{
-            fontFamily: `'${b.family}', ${getFontFallback(b.category)}`,
-            fontSize: 18,
-            lineHeight: 1.7,
-            color: "var(--text-secondary)",
-            maxWidth: 640,
-            marginBottom: 28,
-          }}
-          contentEditable
-          suppressContentEditableWarning
-          onBlur={(e) => setBodyText(e.currentTarget.textContent || "")}
-        >
-          {bodyText}
-        </p>
-        <div style={{ display: "flex", gap: 12 }}>
-          <button className="btn btn-primary" onClick={copyPairingCss}>
-            {copied ? "Copied!" : "Use This Pairing"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FavoritesView({
-  favorites,
-  fonts,
-  onSelect,
-  onToggleFavorite,
-}: {
-  favorites: string[];
-  fonts: Font[];
-  onSelect: (f: Font) => void;
-  onToggleFavorite: (s: string) => void;
-}) {
-  const favFonts = fonts.filter((f) => favorites.includes(f.slug));
-
-  if (favFonts.length === 0) {
-    return (
-      <div style={{ textAlign: "center", padding: 80, color: "var(--text-muted)" }}>
-        <Heart size={48} style={{ marginBottom: 16, opacity: 0.3 }} />
-        <h3 style={{ marginBottom: 8 }}>No favorites saved yet</h3>
-        <p>Click the heart icon on any font to collect your top choices here.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Favorites Collection</h2>
-      <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
-        {favFonts.length} saved font{favFonts.length !== 1 ? "s" : ""}
-      </p>
-      <div className="font-grid">
-        {favFonts.map((font) => (
-          <div key={font.slug} className="font-card" onClick={() => onSelect(font)}>
-            <div className="font-card-header">
-              <div>
-                <div className="font-card-name">{font.family}</div>
-                <div className="font-card-designer">{font.designer}</div>
-              </div>
-              <button
-                className="font-card-fav active"
-                title="Remove from favorites"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleFavorite(font.slug);
-                }}
-              >
-                <Heart size={14} fill="#ef4444" stroke="#ef4444" />
-              </button>
-            </div>
-            <div
-              className="font-card-specimen"
-              style={{ fontFamily: `'${font.family}', ${getFontFallback(font.category)}` }}
-            >
-              Aa
-            </div>
-            <div className="font-card-meta">
-              <span className="font-card-badge">{font.weights.length} weights</span>
-              <span className="font-card-badge category">{font.category}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function LanguageView({ onSelectScript }: { onSelectScript: (s: string) => void }) {
-  const count = (s: string) => fonts.filter((f) => f.scripts.includes(s)).length;
-
-  return (
-    <div>
-      <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Language & Script Support</h2>
-      <p style={{ color: "var(--text-secondary)", marginBottom: 32, maxWidth: 540 }}>
-        Browse fonts tailored for specific writing systems and Unicode scripts. Click any script to filter the catalog.
-      </p>
-      <div className="tools-grid">
-        {scripts.map((s) => {
-          const fontCount = count(s);
-          return (
-            <div
-              key={s}
-              className="tool-card"
-              style={{ cursor: "pointer" }}
-              onClick={() => onSelectScript(s)}
-            >
-              <div className="tool-card-icon">
-                <Globe2 size={20} />
-              </div>
-              <div className="tool-card-title">{s}</div>
-              <div className="tool-card-desc">
-                {fontCount} font{fontCount !== 1 ? "s" : ""} available
-              </div>
-              <div style={{ marginTop: 8, fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}>
-                Explore {s} Fonts →
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function PlaygroundView({
-  selectedFont,
-  onSelectFont,
-  fonts,
-}: {
-  selectedFont: Font;
-  onSelectFont: (f: Font) => void;
-  fonts: Font[];
-}) {
-  const [text, setText] = useState(
-    "Typography is what language looks like. Good type elevates ideas and makes reading intuitive and effortless."
-  );
-  const [size, setSize] = useState(42);
-  const [weight, setWeight] = useState(selectedFont.weights[0] || 400);
-  const [lineHeight, setLineHeight] = useState(1.4);
-  const [spacing, setSpacing] = useState(0);
-  const [align, setAlign] = useState<"left" | "center" | "right">("left");
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    ensureFontLoaded(selectedFont);
-    if (!selectedFont.weights.includes(weight)) {
-      setWeight(selectedFont.weights.includes(400) ? 400 : selectedFont.weights[0]);
-    }
-  }, [selectedFont]);
-
-  const copyPlaygroundCss = () => {
-    const fallback = getFontFallback(selectedFont.category);
-    const css = `/* Playground CSS: ${selectedFont.family} */\nfont-family: '${selectedFont.family}', ${fallback};\nfont-size: ${size}px;\nfont-weight: ${weight};\nline-height: ${lineHeight};\nletter-spacing: ${spacing}px;\ntext-align: ${align};`;
-    navigator.clipboard.writeText(css);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const presets = [
-    { label: "Headline", text: "Design without compromise.", size: 54, weight: 700, lh: 1.1, sp: -1 },
-    { label: "Editorial", text: "Typography is what language looks like. Good type elevates ideas and makes reading effortless.", size: 28, weight: 400, lh: 1.6, sp: 0 },
-    { label: "Interface", text: "Quick actions · Search catalog · Settings and preferences", size: 16, weight: 500, lh: 1.4, sp: 0.5 },
-  ];
-
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12, marginBottom: 24 }}>
-        <div>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Interactive Design Playground</h2>
-          <p style={{ color: "var(--text-secondary)", maxWidth: 540 }}>
-            Experiment with typography variables in a live canvas. Test custom copy, sizes, and layout rhythms.
-          </p>
-        </div>
-        <button className="btn btn-primary" onClick={copyPlaygroundCss} title="Copy CSS styles">
-          {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? "Copied CSS!" : "Copy CSS Rules"}
-        </button>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
-        <div className="control-group">
-          <label className="control-label">
-            <span>Font Family</span>
-          </label>
-          <select
-            className="control-input"
-            value={selectedFont.slug}
-            onChange={(e) => {
-              const f = fonts.find((item) => item.slug === e.target.value);
-              if (f) onSelectFont(f);
-            }}
-          >
-            {fonts.map((f) => (
-              <option key={f.slug} value={f.slug}>
-                {f.family} ({f.category})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="control-group">
-          <div className="control-label">
-            <span>Size</span>
-            <span className="control-value">{size}px</span>
-          </div>
-          <input
-            className="control-slider"
-            type="range"
-            min={14}
-            max={96}
-            value={size}
-            onChange={(e) => setSize(Number(e.target.value))}
-          />
-        </div>
-
-        <div className="control-group">
-          <div className="control-label">
-            <span>Weight</span>
-            <span className="control-value">{weight}</span>
-          </div>
-          <input
-            className="control-slider"
-            type="range"
-            min={100}
-            max={900}
-            step={100}
-            value={weight}
-            onChange={(e) => setWeight(Number(e.target.value))}
-          />
-        </div>
-
-        <div className="control-group">
-          <div className="control-label">
-            <span>Line Height</span>
-            <span className="control-value">{lineHeight}</span>
-          </div>
-          <input
-            className="control-slider"
-            type="range"
-            min={1}
-            max={2.5}
-            step={0.1}
-            value={lineHeight}
-            onChange={(e) => setLineHeight(Number(e.target.value))}
-          />
-        </div>
-
-        <div className="control-group">
-          <div className="control-label">
-            <span>Letter Spacing</span>
-            <span className="control-value">{spacing}px</span>
-          </div>
-          <input
-            className="control-slider"
-            type="range"
-            min={-3}
-            max={15}
-            value={spacing}
-            onChange={(e) => setSpacing(Number(e.target.value))}
-          />
-        </div>
-      </div>
-
-      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
-        <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Presets:</span>
-        {presets.map((p) => (
-          <button
-            key={p.label}
-            className="category-chip"
-            onClick={() => {
-              setText(p.text);
-              setSize(p.size);
-              setWeight(p.weight);
-              setLineHeight(p.lh);
-              setSpacing(p.sp);
-            }}
-          >
-            {p.label}
-          </button>
-        ))}
-        <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
-          <button
-            className={`code-tab${align === "left" ? " active" : ""}`}
-            onClick={() => setAlign("left")}
-            title="Align Left"
-          >
-            <AlignLeft size={14} />
-          </button>
-          <button
-            className={`code-tab${align === "center" ? " active" : ""}`}
-            onClick={() => setAlign("center")}
-            title="Align Center"
-          >
-            <AlignCenter size={14} />
-          </button>
-          <button
-            className={`code-tab${align === "right" ? " active" : ""}`}
-            onClick={() => setAlign("right")}
-            title="Align Right"
-          >
-            <AlignRight size={14} />
-          </button>
-        </div>
-      </div>
-
-      <div
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--surface-border)",
-          borderRadius: "var(--radius-lg)",
-          padding: 40,
-          minHeight: 280,
-          display: "flex",
-          alignItems: "center",
-          boxShadow: "var(--shadow-sm)",
-        }}
-      >
-        <textarea
-          style={{
-            width: "100%",
-            fontFamily: `'${selectedFont.family}', ${getFontFallback(selectedFont.category)}`,
-            fontSize: `${size}px`,
-            fontWeight: weight,
-            lineHeight: lineHeight,
-            letterSpacing: `${spacing}px`,
-            textAlign: align,
-            border: "none",
-            outline: "none",
-            background: "transparent",
-            color: "var(--text-primary)",
-            resize: "vertical",
-            minHeight: 200,
-          }}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-      </div>
-    </div>
-  );
-}
-
-function ToolsView({
-  onOpenUpload,
-  onOpenWeightExplorer,
-  onOpenCssGenerator,
-  onNavigateCompare,
-}: {
-  onOpenUpload: () => void;
-  onOpenWeightExplorer: () => void;
-  onOpenCssGenerator: () => void;
-  onNavigateCompare: () => void;
-}) {
-  return (
-    <div>
-      <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Font Engineering Tools</h2>
-      <p style={{ color: "var(--text-secondary)", marginBottom: 32, maxWidth: 540 }}>
-        Interactive developer utilities for typography testing, parsing, and snippet generation.
-      </p>
-      <div className="tools-grid">
-        <div className="tool-card" style={{ cursor: "pointer" }} onClick={onNavigateCompare}>
-          <div className="tool-card-icon">
-            <Eye size={20} />
-          </div>
-          <div className="tool-card-title">Side-by-Side Comparison</div>
-          <div className="tool-card-desc">Compare up to 3 fonts simultaneously with synchronized custom copy.</div>
-          <div style={{ marginTop: 12, fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}>
-            Launch Comparison →
-          </div>
-        </div>
-
-        <div className="tool-card" style={{ cursor: "pointer" }} onClick={onOpenCssGenerator}>
-          <div className="tool-card-icon">
-            <Code2 size={20} />
-          </div>
-          <div className="tool-card-title">CSS & Embed Generator</div>
-          <div className="tool-card-desc">Generate optimized @import, link tags, Tailwind configuration, or Next.js code.</div>
-          <div style={{ marginTop: 12, fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}>
-            Open Generator →
-          </div>
-        </div>
-
-        <div className="tool-card" style={{ cursor: "pointer" }} onClick={onOpenUpload}>
-          <div className="tool-card-icon">
-            <Upload size={20} />
-          </div>
-          <div className="tool-card-title">Local Font Inspector (OpenType.js)</div>
-          <div className="tool-card-desc">Upload .ttf, .otf, or .woff files to inspect tables, glyph vectors, and metrics.</div>
-          <div style={{ marginTop: 12, fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}>
-            Inspect Local Font →
-          </div>
-        </div>
-
-        <div className="tool-card" style={{ cursor: "pointer" }} onClick={onOpenWeightExplorer}>
-          <div className="tool-card-icon">
-            <Type size={20} />
-          </div>
-          <div className="tool-card-title">Weight Spectrum Explorer</div>
-          <div className="tool-card-desc">View all optical weights from 100 Thin to 900 Black rendered side-by-side.</div>
-          <div style={{ marginTop: 12, fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}>
-            Explore Weights →
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ApiView() {
-  const [copied, setCopied] = useState<string | null>(null);
-
-  const copyUrl = (url: string) => {
-    navigator.clipboard.writeText(url);
-    setCopied(url);
-    setTimeout(() => setCopied(null), 2000);
-  };
-
-  const endpoints = [
-    { method: "GET", path: "/api/fonts", desc: "Retrieve full catalog metadata for all 58+ fonts with tags, weights, and scripts." },
-    { method: "GET", path: "/api/fonts/inter", desc: "Retrieve detailed JSON metadata for a specific font record by slug." },
-    { method: "GET", path: "/api/css/inter", desc: "Production-ready CSS stylesheet endpoint with automated fallback and caching headers." },
-  ];
-
-  return (
-    <div>
-      <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Public Metadata API & CDN</h2>
-      <p style={{ color: "var(--text-secondary)", marginBottom: 32, maxWidth: 540 }}>
-        Integrate FontAtlas programmatically into your builds and applications. Free, open, and no API keys required.
-      </p>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 32 }}>
-        {endpoints.map((ep) => (
-          <div
-            key={ep.path}
-            className="code-box"
-            style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px" }}
-          >
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <span className="font-card-badge" style={{ background: "var(--accent)", color: "#fff", fontWeight: 700 }}>
-                  {ep.method}
-                </span>
-                <code style={{ fontSize: "0.95rem", fontWeight: 600 }}>{ep.path}</code>
-              </div>
-              <div style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>{ep.desc}</div>
-            </div>
-            <button
-              className="btn btn-outline"
-              onClick={() => copyUrl(window.location.origin + ep.path)}
-              title="Copy endpoint URL"
-            >
-              {copied === window.location.origin + ep.path ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
-              {copied === window.location.origin + ep.path ? "Copied" : "Copy"}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="tools-grid">
-        <div className="tool-card">
-          <div className="tool-card-icon">
-            <Zap size={20} />
-          </div>
-          <div className="tool-card-title">Fast Edge CDN</div>
-          <div className="tool-card-desc">Google Fonts upstream delivery with modern woff2 and caching headers.</div>
-        </div>
-        <div className="tool-card">
-          <div className="tool-card-icon">
-            <Code2 size={20} />
-          </div>
-          <div className="tool-card-title">Clean REST Format</div>
-          <div className="tool-card-desc">JSON responses tailored for Next.js, Vite, and front-end build pipelines.</div>
-        </div>
-        <div className="tool-card">
-          <div className="tool-card-icon">
-            <FileText size={20} />
-          </div>
-          <div className="tool-card-title">Per-Font CSS Endpoint</div>
-          <div className="tool-card-desc">Embed fonts using clean `/api/css/[slug]` URLs with correct family fallbacks.</div>
-        </div>
-        <div className="tool-card">
-          <div className="tool-card-icon">
-            <Activity size={20} />
-          </div>
-          <div className="tool-card-title">Zero Authentication</div>
-          <div className="tool-card-desc">No sign-up tokens, cookies, or rate-limiting barriers for developers.</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function FontAtlasApp() {
   const [view, setView] = useState<View>("home");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [script, setScript] = useState("");
   const [selectedFont, setSelectedFont] = useState<Font>(fonts[0]);
-  const [text, setText] = useState("");
+  const [text, setText] = useState(sampleText);
   const [weight, setWeight] = useState(400);
   const [size, setSize] = useState(48);
   const [spacing, setSpacing] = useState(0);
@@ -1226,16 +185,24 @@ export default function FontAtlasApp() {
   const [showUpload, setShowUpload] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showLicense, setShowLicense] = useState(false);
-  const [showWeightExplorer, setShowWeightExplorer] = useState(false);
-  const [showCssGenerator, setShowCssGenerator] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [theme, setTheme] = useState("light");
   const [fontTab, setFontTab] = useState("All");
 
-  // Local OpenType inspection data
-  const [uploadedData, setUploadedData] = useState<UploadedFontData | null>(null);
+  const [detailTab, setDetailTab] = useState("Preview");
+  const [detailCopied, setDetailCopied] = useState(false);
+  const [copiedGlyph, setCopiedGlyph] = useState<string | null>(null);
 
-  // Load favorites & theme from localStorage
+  // Local OpenType inspection data
+  const [uploadedData, setUploadedData] = useState<{
+    fontObj: Font;
+    numGlyphs?: number;
+    unitsPerEm?: number;
+    ascender?: number;
+    descender?: number;
+    extractedGlyphs?: string[];
+  } | null>(null);
+
   useEffect(() => {
     try {
       setTheme(localStorage.getItem("fa-theme") || "light");
@@ -1258,10 +225,9 @@ export default function FontAtlasApp() {
     } catch {}
   }, [favorites]);
 
-  // Load the current selected font and initial batch of popular fonts
   useEffect(() => {
     ensureFontLoaded(selectedFont);
-    fonts.slice(0, 16).forEach((f) => ensureFontLoaded(f));
+    fonts.slice(0, 20).forEach((f) => ensureFontLoaded(f));
   }, [selectedFont]);
 
   const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
@@ -1291,7 +257,15 @@ export default function FontAtlasApp() {
           f.scripts.some((s) => s.toLowerCase().includes(q))
       );
     }
-    if (category) list = list.filter((f) => f.category === category);
+    if (category) {
+      if (category === "Variable") {
+        list = list.filter((f) => f.variable);
+      } else if (category === "Multilingual") {
+        list = list.filter((f) => f.scripts.some((s) => s !== "Latin"));
+      } else {
+        list = list.filter((f) => f.category === category);
+      }
+    }
     if (script) list = list.filter((f) => f.scripts.includes(script));
     if (fontTab === "Popular") list = list.filter((f) => f.weights.length >= 6);
     if (fontTab === "New") list = [...list].reverse().slice(0, 12);
@@ -1299,12 +273,10 @@ export default function FontAtlasApp() {
     return list;
   }, [query, category, script, fontTab]);
 
-  // Ensure fonts displayed in the current view get dynamically loaded
   useEffect(() => {
     filteredFonts.slice(0, 24).forEach((f) => ensureFontLoaded(f));
   }, [filteredFonts]);
 
-  // Robust OpenType.js file handler with Web Font API FontFace registration
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1338,16 +310,15 @@ export default function FontAtlasApp() {
           }
         }
       } catch (otErr) {
-        console.warn("OpenType.js parsing notice:", otErr);
+        console.warn("OpenType parsing error:", otErr);
       }
 
-      // Register with the browser's native FontFace API
       try {
         const fontFace = new FontFace(detectedFamily, buffer);
         const loadedFace = await fontFace.load();
         document.fonts.add(loadedFace);
       } catch (ffErr) {
-        console.warn("Browser FontFace registration notice:", ffErr);
+        console.warn("FontFace load error:", ffErr);
       }
 
       const localFont: Font = {
@@ -1360,18 +331,15 @@ export default function FontAtlasApp() {
         weights: [400],
         variable: false,
         styles: ["normal"],
-        license: parsedFont?.names?.license?.en || "Local Font (Uploaded)",
+        license: parsedFont?.names?.license?.en || "Custom Font (Local)",
         licenseUrl: parsedFont?.names?.licenseURL?.en || "",
         sourceUrl: "",
         googleFamily: "",
-        description: `Local font uploaded from ${file.name}. Parsed with OpenType.js. Total glyphs: ${
-          parsedFont?.numGlyphs || "N/A"
-        }.`,
+        description: `Local font uploaded from ${file.name}. Total glyphs: ${parsedFont?.numGlyphs || "N/A"}.`,
       };
 
       setUploadedData({
         fontObj: localFont,
-        opentypeFont: parsedFont,
         numGlyphs: parsedFont?.numGlyphs,
         unitsPerEm: parsedFont?.unitsPerEm,
         ascender: parsedFont?.ascender,
@@ -1383,7 +351,7 @@ export default function FontAtlasApp() {
       setShowUpload(false);
       setView("fonts");
     } catch (err) {
-      console.error("Error processing font upload:", err);
+      console.error("Upload error:", err);
     }
   };
 
@@ -1391,13 +359,9 @@ export default function FontAtlasApp() {
     ensureFontLoaded(font);
     setSelectedFont(font);
     setWeight(font.weights.includes(400) ? 400 : font.weights[0]);
-    setText("");
+    setText(sampleText);
     setSize(48);
     setSpacing(0);
-    setCodeTab("CDN");
-    if (view === "home" || view === "favorites" || view === "pairings") {
-      setView("fonts");
-    }
   };
 
   const nav = (v: View) => {
@@ -1406,27 +370,62 @@ export default function FontAtlasApp() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const selectedFallback = getFontFallback(selectedFont.category);
+  const selectedCssUrl = useMemo(() => googleCssUrl(selectedFont, [weight]), [selectedFont, weight]);
+
+  const codeSnippets: Record<CodeTab, string> = {
+    CDN: selectedFont.googleFamily ? `<link href="${selectedCssUrl}" rel="stylesheet">` : `/* Local font: ${selectedFont.family} */`,
+    CSS: selectedFont.googleFamily
+      ? `@import url('${selectedCssUrl}');\n\nbody {\n  font-family: '${selectedFont.family}', ${selectedFallback};\n  font-weight: ${weight};\n}`
+      : `body {\n  font-family: '${selectedFont.family}', ${selectedFallback};\n  font-weight: ${weight};\n}`,
+    HTML: selectedFont.googleFamily
+      ? `<link href="${selectedCssUrl}" rel="stylesheet">\n\n<h1 style="font-family: '${selectedFont.family}', ${selectedFallback}">${selectedFont.family}</h1>`
+      : `<h1 style="font-family: '${selectedFont.family}', ${selectedFallback}">${selectedFont.family}</h1>`,
+    Tailwind: `// tailwind.config.js\nfontFamily: {\n  '${selectedFont.family.toLowerCase().replace(/\s+/g, "-")}': ['"${selectedFont.family}"', '${selectedFallback}'],\n}`,
+    "Next.js": selectedFont.googleFamily
+      ? `import { ${selectedFont.family.replace(/[\s-]+/g, "")} } from 'next/font/google'\n\nconst font = ${selectedFont.family.replace(/[\s-]+/g, "")}({ weight: ['${weight}'], subsets: ['latin'] })`
+      : `// Use localFont from 'next/font/local'`,
+    React: `import '@fontsource/${selectedFont.family.toLowerCase().replace(/\s+/g, "-")}'`,
+  };
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(codeSnippets[codeTab]);
+    setDetailCopied(true);
+    setTimeout(() => setDetailCopied(false), 2000);
+  };
+
+  const activeGlyphsList = useMemo(() => {
+    if (uploadedData?.extractedGlyphs && uploadedData.extractedGlyphs.length > 0) {
+      return uploadedData.extractedGlyphs;
+    }
+    for (const sc of selectedFont.scripts) {
+      if (scriptGlyphs[sc]) {
+        return scriptGlyphs[sc].split(" ");
+      }
+    }
+    return scriptGlyphs.Latin.split(" ");
+  }, [selectedFont, uploadedData]);
+
   return (
     <>
-      <div className="topbar">
+      {/* ── Top Bar ────────────────────────────────────────── */}
+      <header className="topbar">
         <button className="mobile-menu-btn" onClick={() => setMobileOpen(true)}>
           <Menu size={20} />
         </button>
-        <div
-          className="topbar-brand"
-          style={{ cursor: "pointer" }}
-          onClick={() => nav("home")}
-        >
-          <div className="topbar-brand-icon">F</div>FontAtlas
+        <div className="topbar-brand" style={{ cursor: "pointer" }} onClick={() => nav("home")}>
+          <div className="topbar-brand-icon">F</div>
+          <span>FontAtlas</span>
         </div>
-        <div className="topbar-nav">
+
+        <nav className="topbar-nav">
           {[
             ["Fonts", "fonts"],
             ["Languages", "languages"],
             ["Playground", "playground"],
             ["Pairings", "pairings"],
             ["Tools", "tools"],
-            ["API & CDN", "api"],
+            ["Resources", "api"],
           ].map(([label, v]) => (
             <a
               key={label}
@@ -1440,13 +439,14 @@ export default function FontAtlasApp() {
               {label}
             </a>
           ))}
-        </div>
+        </nav>
+
         <div className="topbar-search">
           <span className="topbar-search-icon">
-            <Search size={14} />
+            <Search size={15} />
           </span>
           <input
-            placeholder="Search 58+ fonts, scripts, designers..."
+            placeholder="Search fonts, designers, or tags..."
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -1454,16 +454,22 @@ export default function FontAtlasApp() {
             }}
           />
         </div>
+
         <button className="topbar-btn" onClick={toggleTheme} title="Toggle theme">
-          {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+          {theme === "light" ? <Sun size={18} /> : <Moon size={18} />}
         </button>
+
         <div className="topbar-tagline">A better web starts with better type.</div>
-      </div>
+      </header>
 
       <div className="layout">
-        <div className="sidebar">
+        {/* ── Left Sidebar ───────────────────────────────────── */}
+        <aside className="sidebar">
           <div className="side-group">
-            <div className={`side-item${view === "home" ? " active" : ""}`} onClick={() => nav("home")}>
+            <div
+              className={`side-item${view === "home" ? " active" : ""}`}
+              onClick={() => nav("home")}
+            >
               <span className="side-item-icon">
                 <Home size={16} />
               </span>
@@ -1535,7 +541,7 @@ export default function FontAtlasApp() {
               <span className="side-item-icon">
                 <Heart size={16} />
               </span>
-              Favorites ({favorites.length})
+              Collections ({favorites.length})
             </div>
             <div
               className={`side-item${view === "languages" ? " active" : ""}`}
@@ -1544,7 +550,7 @@ export default function FontAtlasApp() {
               <span className="side-item-icon">
                 <Globe2 size={16} />
               </span>
-              Languages ({scripts.length})
+              Language Support
             </div>
             <div
               className={`side-item${view === "playground" ? " active" : ""}`}
@@ -1555,13 +561,19 @@ export default function FontAtlasApp() {
               </span>
               Design Playground
             </div>
-            <div className={`side-item${view === "tools" ? " active" : ""}`} onClick={() => nav("tools")}>
+            <div
+              className={`side-item${view === "tools" ? " active" : ""}`}
+              onClick={() => nav("tools")}
+            >
               <span className="side-item-icon">
                 <SlidersHorizontal size={16} />
               </span>
               Font Tools
             </div>
-            <div className={`side-item${view === "api" ? " active" : ""}`} onClick={() => nav("api")}>
+            <div
+              className={`side-item${view === "api" ? " active" : ""}`}
+              onClick={() => nav("api")}
+            >
               <span className="side-item-icon">
                 <Code2 size={16} />
               </span>
@@ -1577,514 +589,934 @@ export default function FontAtlasApp() {
               </span>
               Test Local Font
             </div>
-          </div>
-
-          <div className="side-group">
             <div className="side-item" onClick={() => setShowAbout(true)}>
               <span className="side-item-icon">
-                <BookOpen size={16} />
+                <Info size={16} />
               </span>
-              About FontAtlas
+              About
             </div>
           </div>
 
           <div className="sidebar-promo">
-            <strong>Beautiful typography.</strong>
-            Open source & no logins required.
+            <strong>Beautiful fonts for a better web.</strong>
+            Free to use.
           </div>
-        </div>
+        </aside>
 
+        {/* ── Main Content + Right Detail Panel ────────────────── */}
         <div className="layout-content">
-          <div className="layout-main">
+          <main className="layout-main">
             {view === "home" && (
               <>
-                <div className="hero">
+                {/* Hero Section matching design reference */}
+                <section className="hero">
                   <div className="hero-left">
-                    <div className="hero-eyebrow">OPEN · FREE · NO REGISTRATION</div>
+                    <div className="hero-eyebrow">OPEN · FREE · FOR EVERYONE</div>
                     <h1 className="hero-title">
-                      Find the perfect font for your <span className="accent">next product</span>
+                      Find the perfect font for your <span className="gradient-next">next</span>{" "}
+                      <span className="gradient-project">project</span>
                     </h1>
                     <p className="hero-subtitle">
-                      Browse {fonts.length}+ curated typefaces. Variable, multilingual, and ready for instant developer
-                      integration. Live testing, pairings, and clean code snippets.
+                      A modern font library with previews, language support, CDN links, and ready-to-use code. No sign
+                      up. Just great typography.
                     </p>
-                    <div style={{ display: "flex", gap: 8, marginTop: 24 }}>
-                      <div className="topbar-search" style={{ maxWidth: 320 }}>
-                        <span className="topbar-search-icon">
-                          <Search size={14} />
-                        </span>
-                        <input
-                          placeholder="Search fonts..."
-                          value={query}
-                          onChange={(e) => setQuery(e.target.value)}
-                          onFocus={() => setView("fonts")}
-                        />
-                      </div>
-                      <button className="btn btn-primary" onClick={() => setView("fonts")}>
-                        Browse Fonts
+
+                    <div className="hero-search-box">
+                      <Search size={18} color="var(--text-muted)" style={{ marginRight: 10 }} />
+                      <input
+                        placeholder="Search fonts (e.g. Inter, Roboto, Malayalam, handwritten...)"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") nav("fonts");
+                        }}
+                      />
+                      <button className="hero-search-btn" onClick={() => nav("fonts")}>
+                        Search
                       </button>
                     </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: 6,
-                        marginTop: 16,
-                        flexWrap: "wrap",
-                        alignItems: "center",
-                      }}
-                    >
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Popular:</span>
+
+                    <div className="hero-popular">
+                      <span className="hero-popular-label">Popular:</span>
                       {popularFonts.map((name) => (
-                        <span
+                        <button
                           key={name}
-                          className="category-chip"
+                          className="hero-popular-chip"
                           onClick={() => {
                             setQuery(name);
-                            setView("fonts");
+                            nav("fonts");
                           }}
                         >
                           {name}
-                        </span>
+                        </button>
                       ))}
                     </div>
                   </div>
-                  <div className="hero-art">
-                    <div className="hero-card">
-                      <div className="hero-card-text">Typography inspires better products.</div>
-                      <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: 8 }}>
-                        Use the right font. Make a memorable impression.
-                      </div>
+
+                  <div className="hero-card">
+                    <div className="hero-card-content">
+                      <div className="hero-card-title">Typography inspires better products.</div>
+                      <div className="hero-card-sub">Use the right font. Make a stronger impression.</div>
                       <a
                         href="#"
-                        style={{ fontSize: "0.85rem", color: "var(--accent)", fontWeight: 600 }}
+                        className="hero-card-link"
                         onClick={(e) => {
                           e.preventDefault();
-                          setView("fonts");
+                          nav("fonts");
                         }}
                       >
-                        Explore Catalog ({fonts.length}) →
+                        Explore Fonts →
                       </a>
-                      <div className="hero-card-aa">Aa</div>
+                    </div>
+                    <div className="hero-card-art">
+                      <div className="hero-card-aa-giant">Aa</div>
+                      <div className="hero-card-badge-sketch">
+                        Better
+                        <br />
+                        Type
+                        <br />
+                        Brighter
+                        <br />
+                        Ideas ↗
+                      </div>
                     </div>
                   </div>
-                </div>
+                </section>
 
-                <div className="categories">
-                  <div className="categories-title">Browse by Category</div>
-                  <div className="categories-scroll">
-                    {categories.map((cat) => (
-                      <button
-                        key={cat}
-                        className={`category-chip${category === cat ? " active" : ""}`}
-                        onClick={() => {
-                          setCategory(category === cat ? "" : cat);
-                          setView("fonts");
-                        }}
-                      >
-                        <span className="category-chip-icon">{categoryIcons[cat] || "Aa"}</span>
-                        {cat}
-                      </button>
-                    ))}
+                {/* Browse by Category (10-Column Box Showcase) */}
+                <section className="category-section">
+                  <div className="category-section-header">
+                    <div className="category-section-title">Browse Fonts by Category</div>
+                    <a
+                      href="#"
+                      className="category-view-all"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCategory("");
+                        nav("fonts");
+                      }}
+                    >
+                      View All →
+                    </a>
                   </div>
-                </div>
 
-                <div style={{ marginBottom: 40 }}>
-                  <div className="font-section-header">
-                    <div className="font-section-title">Featured Fonts</div>
-                    <span className="font-count">{filteredFonts.length} fonts</span>
+                  <div className="category-grid-10">
+                    {categoryShowcase.map((cat) => {
+                      const isActive = category === cat.name;
+                      return (
+                        <div
+                          key={cat.name}
+                          className={`category-box${isActive ? " active" : ""}`}
+                          onClick={() => {
+                            setCategory(isActive ? "" : cat.name);
+                            nav("fonts");
+                          }}
+                        >
+                          <div className="category-box-specimen" style={{ fontFamily: cat.fontFam }}>
+                            {cat.specimen}
+                          </div>
+                          <div className="category-box-name">{cat.name}</div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
+                </section>
+
+                {/* Featured Fonts Section */}
+                <section style={{ marginBottom: 40 }}>
+                  <div className="font-section-bar">
+                    <div style={{ fontSize: "1.2rem", fontWeight: 800 }}>Featured Fonts</div>
+                    <div className="pill-tabs">
+                      {["All", "Popular", "New", "Variable"].map((t) => (
+                        <button
+                          key={t}
+                          className={`pill-tab${fontTab === t ? " active" : ""}`}
+                          onClick={() => setFontTab(t)}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="font-grid">
+                    {filteredFonts.slice(0, 9).map((font) => {
+                      const isSelected = selectedFont.slug === font.slug;
+                      const isFav = favorites.includes(font.slug);
+                      const tagline =
+                        fontTaglines[font.slug] || `${font.category} designed by ${font.designer}.`;
+                      const fallback = getFontFallback(font.category);
+
+                      return (
+                        <div
+                          key={font.slug}
+                          className={`font-card${isSelected ? " active" : ""}`}
+                          onClick={() => selectFont(font)}
+                        >
+                          <div className="font-card-top">
+                            <div className="font-card-title-group">
+                              <span className="font-card-name">{font.family}</span>
+                              {font.variable && <span className="badge-variable">Variable</span>}
+                            </div>
+                            <button
+                              className={`font-card-fav-btn${isFav ? " active" : ""}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(font.slug);
+                              }}
+                              title={isFav ? "Remove favorite" : "Save font"}
+                            >
+                              <Heart
+                                size={15}
+                                fill={isFav ? "#ef4444" : "none"}
+                                stroke={isFav ? "#ef4444" : "currentColor"}
+                              />
+                            </button>
+                          </div>
+
+                          <div className="font-card-designer">{font.designer}</div>
+
+                          <div
+                            className="font-card-center-aa"
+                            style={{ fontFamily: `'${font.family}', ${fallback}` }}
+                          >
+                            Aa
+                          </div>
+
+                          <div className="font-card-tagline">{tagline}</div>
+
+                          <div className="font-card-footer-meta">
+                            {font.weights.length} weights · {font.category}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                {/* More Than Just Fonts Feature Banner matching design reference */}
+                <section className="features-banner-section">
+                  <div className="features-banner-title">More Than Just Fonts</div>
+                  <div className="features-banner-sub">
+                    Everything you need to explore, use, and integrate fonts into modern applications.
+                  </div>
+
+                  <div className="features-banner-grid">
+                    <div
+                      className="feature-banner-card"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => nav("playground")}
+                    >
+                      <div className="feature-banner-circle">
+                        <Eye size={20} />
+                      </div>
+                      <div className="feature-banner-content">
+                        <h4>Preview & Compare</h4>
+                        <p>Test and compare fonts side by side with your own custom text.</p>
+                      </div>
+                    </div>
+
+                    <div
+                      className="feature-banner-card"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => nav("languages")}
+                    >
+                      <div className="feature-banner-circle">
+                        <Globe2 size={20} />
+                      </div>
+                      <div className="feature-banner-content">
+                        <h4>Language Support</h4>
+                        <p>See which fonts support your language across 17+ Unicode scripts.</p>
+                      </div>
+                    </div>
+
+                    <div
+                      className="feature-banner-card"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => nav("api")}
+                    >
+                      <div className="feature-banner-circle">
+                        <Code2 size={20} />
+                      </div>
+                      <div className="feature-banner-content">
+                        <h4>Ready-to-Use Code</h4>
+                        <p>Get CDN links, CSS, HTML, Tailwind, and Next.js snippets instantly.</p>
+                      </div>
+                    </div>
+
+                    <div
+                      className="feature-banner-card"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => nav("fonts")}
+                    >
+                      <div className="feature-banner-circle">
+                        <Zap size={20} />
+                      </div>
+                      <div className="feature-banner-content">
+                        <h4>No Account Required</h4>
+                        <p>Start using fonts immediately. Fast, completely free, and open.</p>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </>
+            )}
+
+            {view === "fonts" && (
+              <div>
+                <div className="font-section-bar">
+                  <div>
+                    <div style={{ fontSize: "1.3rem", fontWeight: 800 }}>
+                      {category || script ? `Filtered Fonts` : `All Fonts`}
+                    </div>
+                    <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                      Showing {filteredFonts.length} of {fonts.length} curated fonts
+                    </div>
+                  </div>
+
+                  <div className="pill-tabs">
                     {["All", "Popular", "New", "Variable"].map((t) => (
                       <button
                         key={t}
-                        className={`code-tab${fontTab === t ? " active" : ""}`}
+                        className={`pill-tab${fontTab === t ? " active" : ""}`}
                         onClick={() => setFontTab(t)}
                       >
                         {t}
                       </button>
                     ))}
                   </div>
-                  <div style={{ display: "flex", gap: 24 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div className="font-grid">
-                        {filteredFonts.slice(0, 12).map((font) => (
-                          <FontCard
-                            key={font.slug}
-                            font={font}
-                            selected={selectedFont?.slug === font.slug}
-                            onSelect={selectFont}
-                            isFavorite={favorites.includes(font.slug)}
-                            onToggleFavorite={toggleFavorite}
-                            isCompared={compare.some((c) => c.slug === font.slug)}
-                            onToggleCompare={toggleCompare}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    {selectedFont && (
-                      <FontDetail
-                        font={selectedFont}
-                        text={text}
-                        onTextChange={setText}
-                        weight={weight}
-                        onWeightChange={setWeight}
-                        size={size}
-                        onSizeChange={setSize}
-                        spacing={spacing}
-                        onSpacingChange={setSpacing}
-                        codeTab={codeTab}
-                        onCodeTabChange={setCodeTab}
-                        isFavorite={favorites.includes(selectedFont.slug)}
-                        onToggleFavorite={toggleFavorite}
-                        uploadedData={uploadedData?.fontObj.slug === selectedFont.slug ? uploadedData : null}
-                      />
-                    )}
-                  </div>
-                </div>
-
-                {compare.length > 0 && (
-                  <div className="compare-section">
-                    <div className="compare-header">
-                      <div className="compare-title">Compare Fonts ({compare.length}/3)</div>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button className="btn btn-outline" onClick={() => setCompare([])}>
-                          Clear All
-                        </button>
-                      </div>
-                    </div>
-                    <div style={{ marginBottom: 16 }}>
-                      <input
-                        className="control-input"
-                        placeholder="Type text to compare side-by-side..."
-                        value={compareText}
-                        onChange={(e) => setCompareText(e.target.value)}
-                      />
-                    </div>
-                    <div className="compare-grid">
-                      {compare.map((font) => (
-                        <div key={font.slug} className="compare-card">
-                          <div className="compare-card-header">
-                            <div className="compare-card-name">{font.family}</div>
-                            <button
-                              className="compare-card-remove"
-                              onClick={() => toggleCompare(font)}
-                              title="Remove font"
-                            >
-                              <X size={14} />
-                            </button>
-                          </div>
-                          <div
-                            className="compare-card-body"
-                            style={{
-                              fontFamily: `'${font.family}', ${getFontFallback(font.category)}`,
-                              fontSize: "1.2rem",
-                              lineHeight: 1.5,
-                            }}
-                          >
-                            {compareText || sampleText}
-                          </div>
-                          <div className="compare-card-footer">
-                            <span className="font-card-badge">{font.category}</span>
-                            <span className="font-card-badge">{font.weights.length} weights</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div style={{ marginBottom: 40 }}>
-                  <h2 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: 4 }}>
-                    Complete Typography Toolkit
-                  </h2>
-                  <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: 20 }}>
-                    Everything you need to discover, test, and ship type
-                  </p>
-                  <div className="tools-grid">
-                    <div className="tool-card" style={{ cursor: "pointer" }} onClick={() => nav("pairings")}>
-                      <div className="tool-card-icon">
-                        <Palette size={20} />
-                      </div>
-                      <div className="tool-card-title">Font Pairings</div>
-                      <div className="tool-card-desc">Find matching heading and body combinations.</div>
-                    </div>
-                    <div className="tool-card" style={{ cursor: "pointer" }} onClick={() => nav("languages")}>
-                      <div className="tool-card-icon">
-                        <Globe2 size={20} />
-                      </div>
-                      <div className="tool-card-title">Language Support</div>
-                      <div className="tool-card-desc">17 scripts covered with 58+ fonts.</div>
-                    </div>
-                    <div className="tool-card" style={{ cursor: "pointer" }} onClick={() => nav("playground")}>
-                      <div className="tool-card-icon">
-                        <Sliders size={20} />
-                      </div>
-                      <div className="tool-card-title">Design Playground</div>
-                      <div className="tool-card-desc">Fine-tune weights, sizes, and letter spacing live.</div>
-                    </div>
-                    <div className="tool-card" style={{ cursor: "pointer" }} onClick={() => setShowUpload(true)}>
-                      <div className="tool-card-icon">
-                        <Upload size={20} />
-                      </div>
-                      <div className="tool-card-title">OpenType Font Inspector</div>
-                      <div className="tool-card-desc">Parse and test local .ttf, .otf, and .woff files.</div>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {view === "fonts" && (
-              <div>
-                <div className="font-section-header" style={{ marginTop: 8 }}>
-                  <div className="font-section-title">
-                    {category || script ? `Filtered Fonts (${filteredFonts.length})` : `All Fonts (${fonts.length})`}
-                  </div>
-                  <span className="font-count">{filteredFonts.length} fonts</span>
                 </div>
 
                 {(category || script) && (
-                  <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
                     {category && (
-                      <span className="category-chip active" onClick={() => setCategory("")}>
-                        Category: {category} <X size={12} />
+                      <span className="hero-popular-chip" style={{ borderColor: "var(--accent)", color: "var(--accent)" }} onClick={() => setCategory("")}>
+                        Category: {category} <X size={12} style={{ marginLeft: 4 }} />
                       </span>
                     )}
                     {script && (
-                      <span className="category-chip active" onClick={() => setScript("")}>
-                        Script: {script} <X size={12} />
+                      <span className="hero-popular-chip" style={{ borderColor: "var(--accent)", color: "var(--accent)" }} onClick={() => setScript("")}>
+                        Script: {script} <X size={12} style={{ marginLeft: 4 }} />
                       </span>
                     )}
                   </div>
                 )}
 
-                <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
-                  {["All", "Popular", "New", "Variable"].map((t) => (
-                    <button
-                      key={t}
-                      className={`code-tab${fontTab === t ? " active" : ""}`}
-                      onClick={() => setFontTab(t)}
-                    >
-                      {t}
-                    </button>
-                  ))}
+                <div className="font-grid">
+                  {filteredFonts.map((font) => {
+                    const isSelected = selectedFont.slug === font.slug;
+                    const isFav = favorites.includes(font.slug);
+                    const tagline = fontTaglines[font.slug] || `${font.category} designed by ${font.designer}.`;
+                    const fallback = getFontFallback(font.category);
+
+                    return (
+                      <div
+                        key={font.slug}
+                        className={`font-card${isSelected ? " active" : ""}`}
+                        onClick={() => selectFont(font)}
+                      >
+                        <div className="font-card-top">
+                          <div className="font-card-title-group">
+                            <span className="font-card-name">{font.family}</span>
+                            {font.variable && <span className="badge-variable">Variable</span>}
+                          </div>
+                          <button
+                            className={`font-card-fav-btn${isFav ? " active" : ""}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(font.slug);
+                            }}
+                            title={isFav ? "Remove favorite" : "Save font"}
+                          >
+                            <Heart
+                              size={15}
+                              fill={isFav ? "#ef4444" : "none"}
+                              stroke={isFav ? "#ef4444" : "currentColor"}
+                            />
+                          </button>
+                        </div>
+
+                        <div className="font-card-designer">{font.designer}</div>
+
+                        <div
+                          className="font-card-center-aa"
+                          style={{ fontFamily: `'${font.family}', ${fallback}` }}
+                        >
+                          Aa
+                        </div>
+
+                        <div className="font-card-tagline">{tagline}</div>
+
+                        <div className="font-card-footer-meta">
+                          {font.weights.length} weights · {font.category}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
-                <div style={{ display: "flex", gap: 24 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div className="font-grid">
-                      {filteredFonts.map((font) => (
-                        <FontCard
-                          key={font.slug}
-                          font={font}
-                          selected={selectedFont?.slug === font.slug}
-                          onSelect={selectFont}
-                          isFavorite={favorites.includes(font.slug)}
-                          onToggleFavorite={toggleFavorite}
-                          isCompared={compare.some((c) => c.slug === font.slug)}
-                          onToggleCompare={toggleCompare}
-                        />
-                      ))}
-                    </div>
-                    {filteredFonts.length === 0 && (
-                      <div style={{ textAlign: "center", padding: 60, color: "var(--text-muted)" }}>
-                        No fonts match your criteria. Try adjusting your search query or filters.
-                      </div>
-                    )}
+                {filteredFonts.length === 0 && (
+                  <div style={{ textAlign: "center", padding: 80, color: "var(--text-muted)" }}>
+                    No fonts found matching your search. Try resetting filters.
                   </div>
-                  {selectedFont && (
-                    <FontDetail
-                      font={selectedFont}
-                      text={text}
-                      onTextChange={setText}
-                      weight={weight}
-                      onWeightChange={setWeight}
-                      size={size}
-                      onSizeChange={setSize}
-                      spacing={spacing}
-                      onSpacingChange={setSpacing}
-                      codeTab={codeTab}
-                      onCodeTabChange={setCodeTab}
-                      isFavorite={favorites.includes(selectedFont.slug)}
-                      onToggleFavorite={toggleFavorite}
-                      uploadedData={uploadedData?.fontObj.slug === selectedFont.slug ? uploadedData : null}
-                    />
-                  )}
-                </div>
+                )}
               </div>
             )}
 
             {view === "favorites" && (
-              <FavoritesView
-                favorites={favorites}
-                fonts={fonts}
-                onSelect={selectFont}
-                onToggleFavorite={toggleFavorite}
-              />
+              <div>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Your Collections</h2>
+                <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
+                  {favorites.length} saved font{favorites.length !== 1 ? "s" : ""} in your collection
+                </p>
+                <div className="font-grid">
+                  {fonts
+                    .filter((f) => favorites.includes(f.slug))
+                    .map((font) => (
+                      <div
+                        key={font.slug}
+                        className="font-card"
+                        onClick={() => selectFont(font)}
+                      >
+                        <div className="font-card-top">
+                          <span className="font-card-name">{font.family}</span>
+                          <button
+                            className="font-card-fav-btn active"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(font.slug);
+                            }}
+                          >
+                            <Heart size={15} fill="#ef4444" stroke="#ef4444" />
+                          </button>
+                        </div>
+                        <div className="font-card-designer">{font.designer}</div>
+                        <div
+                          className="font-card-center-aa"
+                          style={{ fontFamily: `'${font.family}', ${getFontFallback(font.category)}` }}
+                        >
+                          Aa
+                        </div>
+                        <div className="font-card-tagline">{fontTaglines[font.slug] || font.description}</div>
+                        <div className="font-card-footer-meta">
+                          {font.weights.length} weights · {font.category}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
             )}
 
-            {view === "pairings" && <FontPairingsView fonts={fonts} />}
+            {view === "pairings" && (
+              <div>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Font Pairings Explorer</h2>
+                <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
+                  Harmonize heading and body fonts. Test readability, contrast, and visual rhythm.
+                </p>
+                {/* Interactive pairing builder */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+                  <div className="control-group">
+                    <label className="control-label">
+                      <span>Heading Font</span>
+                    </label>
+                    <select
+                      className="control-input"
+                      value={selectedFont.slug}
+                      onChange={(e) => {
+                        const f = fonts.find((item) => item.slug === e.target.value);
+                        if (f) selectFont(f);
+                      }}
+                    >
+                      {fonts.map((f) => (
+                        <option key={f.slug} value={f.slug}>
+                          {f.family} ({f.category})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="control-group">
+                    <label className="control-label">
+                      <span>Body Font</span>
+                    </label>
+                    <select
+                      className="control-input"
+                      defaultValue="lora"
+                    >
+                      {fonts.map((f) => (
+                        <option key={f.slug} value={f.slug}>
+                          {f.family} ({f.category})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    background: "var(--surface)",
+                    border: "1px solid var(--surface-border)",
+                    borderRadius: "var(--radius-lg)",
+                    padding: 40,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily: `'${selectedFont.family}', ${selectedFallback}`,
+                      fontSize: "48px",
+                      fontWeight: 700,
+                      marginBottom: 16,
+                      lineHeight: 1.15,
+                    }}
+                  >
+                    Build something remarkable.
+                  </div>
+                  <p
+                    style={{
+                      fontFamily: `'Lora', serif`,
+                      fontSize: "18px",
+                      lineHeight: 1.7,
+                      color: "var(--text-secondary)",
+                      maxWidth: 640,
+                      marginBottom: 24,
+                    }}
+                  >
+                    Typography is part of the product. The harmony between your display headline and your long-form
+                    body text sets the emotional tone of your entire application.
+                  </p>
+                  <button className="btn btn-primary" onClick={handleCopyCode}>
+                    Copy Pairing Styles
+                  </button>
+                </div>
+              </div>
+            )}
 
             {view === "languages" && (
-              <LanguageView
-                onSelectScript={(s) => {
-                  setScript(s);
-                  setCategory("");
-                  nav("fonts");
-                }}
-              />
+              <div>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Language & Script Coverage</h2>
+                <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
+                  Browse fonts supporting global writing systems and Unicode scripts.
+                </p>
+                <div className="category-grid-10" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))" }}>
+                  {scripts.map((s) => {
+                    const c = fonts.filter((f) => f.scripts.includes(s)).length;
+                    return (
+                      <div
+                        key={s}
+                        className="category-box"
+                        style={{ padding: "24px 16px" }}
+                        onClick={() => {
+                          setScript(s);
+                          setCategory("");
+                          nav("fonts");
+                        }}
+                      >
+                        <Globe2 size={24} color="var(--accent)" style={{ marginBottom: 10 }} />
+                        <div style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: 4 }}>{s}</div>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{c} fonts</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             )}
 
             {view === "playground" && (
-              <PlaygroundView
-                selectedFont={selectedFont}
-                onSelectFont={(f) => {
-                  ensureFontLoaded(f);
-                  setSelectedFont(f);
-                }}
-                fonts={fonts}
-              />
+              <div>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Design Playground</h2>
+                <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
+                  Experiment with {selectedFont.family} across sizes, weights, and letter-spacings.
+                </p>
+                <div
+                  style={{
+                    background: "var(--surface)",
+                    border: "1px solid var(--surface-border)",
+                    borderRadius: "var(--radius-lg)",
+                    padding: 40,
+                  }}
+                >
+                  <textarea
+                    style={{
+                      width: "100%",
+                      fontFamily: `'${selectedFont.family}', ${selectedFallback}`,
+                      fontSize: `${size}px`,
+                      fontWeight: weight,
+                      letterSpacing: `${spacing}px`,
+                      color: "var(--text-primary)",
+                      minHeight: 180,
+                    }}
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                  />
+                </div>
+              </div>
             )}
 
             {view === "tools" && (
-              <ToolsView
-                onOpenUpload={() => setShowUpload(true)}
-                onOpenWeightExplorer={() => setShowWeightExplorer(true)}
-                onOpenCssGenerator={() => setShowCssGenerator(true)}
-                onNavigateCompare={() => {
-                  if (compare.length === 0 && fonts.length >= 2) {
-                    setCompare([fonts[0], fonts[1]]);
-                  }
-                  nav("home");
-                }}
-              />
+              <div>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Developer Font Tools</h2>
+                <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
+                  Utilities for web developers, designers, and font engineers.
+                </p>
+                <div className="features-banner-grid">
+                  <div className="feature-banner-card" style={{ cursor: "pointer" }} onClick={() => setShowUpload(true)}>
+                    <div className="feature-banner-circle">
+                      <Upload size={20} />
+                    </div>
+                    <div className="feature-banner-content">
+                      <h4>OpenType Inspector</h4>
+                      <p>Upload local .ttf or .otf files to inspect metrics and glyph tables.</p>
+                    </div>
+                  </div>
+                  <div className="feature-banner-card" style={{ cursor: "pointer" }} onClick={() => nav("pairings")}>
+                    <div className="feature-banner-circle">
+                      <Palette size={20} />
+                    </div>
+                    <div className="feature-banner-content">
+                      <h4>Pairings Studio</h4>
+                      <p>Generate matching combinations for headings, buttons, and content.</p>
+                    </div>
+                  </div>
+                  <div className="feature-banner-card" style={{ cursor: "pointer" }} onClick={() => nav("api")}>
+                    <div className="feature-banner-circle">
+                      <Code2 size={20} />
+                    </div>
+                    <div className="feature-banner-content">
+                      <h4>CSS CDN Endpoint</h4>
+                      <p>Production /api/css/[slug] endpoints ready for edge delivery.</p>
+                    </div>
+                  </div>
+                  <div className="feature-banner-card" style={{ cursor: "pointer" }} onClick={() => nav("playground")}>
+                    <div className="feature-banner-circle">
+                      <Sliders size={20} />
+                    </div>
+                    <div className="feature-banner-content">
+                      <h4>Variable Explorer</h4>
+                      <p>Test optical weights and variable font axis interpolation.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
-            {view === "api" && <ApiView />}
-
-            <div className="footer">
-              <div className="footer-inner">
-                <div>
-                  <div className="footer-brand">FontAtlas</div>
-                  <div className="footer-desc">
-                    A clean, no-login font discovery and developer integration platform for the modern web.
+            {view === "api" && (
+              <div>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Public API & Integration</h2>
+                <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
+                  Zero-configuration endpoints with CDN caching and automated fallback stylesheets.
+                </p>
+                <div className="dark-code-card" style={{ marginBottom: 24 }}>
+                  <div className="dark-code-content">
+                    <pre>{`GET /api/fonts          — Complete catalog metadata (58+ fonts)\nGET /api/fonts/:slug   — Single font details\nGET /api/css/:slug     — Production CSS @import endpoint\n\nExample:\ncurl https://fontatlas.vercel.app/api/fonts/inter\ncurl https://fontatlas.vercel.app/api/css/inter`}</pre>
                   </div>
-                  <div className="footer-social">
-                    <a
-                      href="https://github.com/jojin1709/fontatlas"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="GitHub"
-                    >
+                </div>
+              </div>
+            )}
+
+            {/* Clean Footer matching design reference */}
+            <footer className="footer-clean">
+              <div className="footer-top-row">
+                <div className="footer-left-info">
+                  <span className="footer-logo">FontAtlas</span>
+                  <span className="footer-tag">A free font library for a more beautiful web.</span>
+                </div>
+                <div className="footer-nav-links">
+                  <a href="#" onClick={(e) => { e.preventDefault(); nav("fonts"); }}>Fonts</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); nav("api"); }}>API</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); setShowLicense(true); }}>License</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); setShowAbout(true); }}>About</a>
+                  <a href="mailto:contact@fontatlas.dev">Contact</a>
+                  <div className="footer-social-icons">
+                    <a href="https://github.com/jojin1709/fontatlas" target="_blank" rel="noopener noreferrer" title="GitHub">
                       <Code2 size={16} />
                     </a>
-                    <a
-                      href="https://twitter.com/jojin1709"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Twitter"
-                    >
+                    <a href="https://twitter.com/jojin1709" target="_blank" rel="noopener noreferrer" title="Twitter">
                       <Activity size={16} />
                     </a>
                   </div>
                 </div>
-                <div className="footer-col">
-                  <div className="footer-col-title">Product</div>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      nav("fonts");
-                    }}
-                  >
-                    Catalog
-                  </a>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      nav("pairings");
-                    }}
-                  >
-                    Pairings
-                  </a>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      nav("api");
-                    }}
-                  >
-                    API Endpoints
-                  </a>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowLicense(true);
-                    }}
-                  >
-                    License
-                  </a>
-                </div>
-                <div className="footer-col">
-                  <div className="footer-col-title">Project</div>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowAbout(true);
-                    }}
-                  >
-                    About FontAtlas
-                  </a>
-                  <a
-                    href="https://github.com/jojin1709/fontatlas"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Source Code
-                  </a>
-                  <a
-                    href="https://github.com/jojin1709/fontatlas/issues"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Report Issue
-                  </a>
-                </div>
-                <div className="footer-col">
-                  <div className="footer-col-title">Resources</div>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      nav("api");
-                    }}
-                  >
-                    Documentation
-                  </a>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      nav("tools");
-                    }}
-                  >
-                    Developer Tools
-                  </a>
-                </div>
               </div>
-              <div className="footer-bottom">
-                <span>© 2026 FontAtlas. Open source under the MIT License. Developed by JOJIN JOHN.</span>
-                <span>Fonts delivered via upstream CDN (Google Fonts).</span>
+              <div className="footer-sub-row">
+                <span>© 2026 FontAtlas. Open source MIT. Developed by JOJIN JOHN.</span>
+                <span>Fonts delivered via upstream official CDN.</span>
+              </div>
+            </footer>
+          </main>
+
+          {/* ── Right Side Font Detail Panel matching design reference ─ */}
+          <aside className="font-detail-panel">
+            <div className="font-detail-top">
+              <div>
+                <div className="font-detail-family">
+                  {selectedFont.family}
+                  {selectedFont.variable && <span className="badge-variable">Variable</span>}
+                </div>
+                <div className="font-detail-author">Designed by {selectedFont.designer}</div>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <button
+                  className={`font-card-fav-btn${favorites.includes(selectedFont.slug) ? " active" : ""}`}
+                  style={{ width: 34, height: 34, border: "1px solid var(--surface-border)" }}
+                  onClick={() => toggleFavorite(selectedFont.slug)}
+                  title={favorites.includes(selectedFont.slug) ? "Remove favorite" : "Add to favorites"}
+                >
+                  <Heart
+                    size={16}
+                    fill={favorites.includes(selectedFont.slug) ? "#ef4444" : "none"}
+                    stroke={favorites.includes(selectedFont.slug) ? "#ef4444" : "currentColor"}
+                  />
+                </button>
+
+                {selectedFont.sourceUrl ? (
+                  <button
+                    className="btn-download-dark"
+                    onClick={() => window.open(selectedFont.sourceUrl, "_blank", "noopener,noreferrer")}
+                  >
+                    <Download size={15} /> Download
+                  </button>
+                ) : null}
               </div>
             </div>
-          </div>
+
+            {/* Underline Tabs matching design reference */}
+            <div className="detail-nav-tabs">
+              {["Preview", "Glyphs", "Languages", "Weights", "Metadata", "License"].map((t) => (
+                <div
+                  key={t}
+                  className={`detail-nav-tab${detailTab === t ? " active" : ""}`}
+                  onClick={() => setDetailTab(t)}
+                >
+                  {t}
+                </div>
+              ))}
+            </div>
+
+            {/* Dropdown + Custom text input bar */}
+            <div className="specimen-text-bar">
+              <select
+                className="specimen-text-dropdown"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "default") setText(sampleText);
+                  else if (val === "alphabet") setText("ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz");
+                  else if (val === "numerals") setText("0123456789 $ € £ ¥ % & @ # ! ?");
+                  else if (val === "paragraph")
+                    setText("Almost before we knew it, we had left the ground. Typography inspires better interfaces.");
+                }}
+              >
+                <option value="default">Custom text ⌄</option>
+                <option value="alphabet">Alphabet</option>
+                <option value="numerals">Numerals & Punctuation</option>
+                <option value="paragraph">Paragraph Specimen</option>
+              </select>
+              <input
+                className="specimen-text-input"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Type custom text..."
+              />
+            </div>
+
+            {/* Live Specimen Preview */}
+            <div className="specimen-live-display">
+              <div
+                style={{
+                  fontFamily: `'${selectedFont.family}', ${selectedFallback}`,
+                  fontSize: `${size}px`,
+                  fontWeight: weight,
+                  letterSpacing: `${spacing}px`,
+                  lineHeight: 1.15,
+                  color: "var(--text-primary)",
+                }}
+              >
+                {text || sampleText}
+              </div>
+            </div>
+
+            {/* 3 Slider Columns matching design reference */}
+            <div className="slider-three-col">
+              <div>
+                <div className="slider-col-header">
+                  <span>Size</span>
+                  <span className="slider-pill-val">{size}px ⌄</span>
+                </div>
+                <input
+                  className="control-slider"
+                  type="range"
+                  min={16}
+                  max={96}
+                  value={size}
+                  onChange={(e) => setSize(Number(e.target.value))}
+                />
+              </div>
+
+              <div>
+                <div className="slider-col-header">
+                  <span>Weight</span>
+                  <span className="slider-pill-val">{weight} ⌄</span>
+                </div>
+                <input
+                  className="control-slider"
+                  type="range"
+                  min={100}
+                  max={900}
+                  step={100}
+                  value={weight}
+                  onChange={(e) => setWeight(Number(e.target.value))}
+                />
+              </div>
+
+              <div>
+                <div className="slider-col-header">
+                  <span>Letter spacing</span>
+                  <span className="slider-pill-val">{spacing}px ⌄</span>
+                </div>
+                <input
+                  className="control-slider"
+                  type="range"
+                  min={-4}
+                  max={16}
+                  value={spacing}
+                  onChange={(e) => setSpacing(Number(e.target.value))}
+                />
+              </div>
+            </div>
+
+            {/* Quick Use Code Box matching design reference */}
+            <div className="quick-use-section">
+              <div className="quick-use-title">Quick Use</div>
+              <div className="quick-use-sub">Use this CDN link to add {selectedFont.family} to your website.</div>
+
+              <div className="dark-code-card">
+                <div className="dark-code-tabs">
+                  {(["CDN", "CSS", "HTML", "Tailwind", "Next.js", "React"] as CodeTab[]).map((tab) => (
+                    <div
+                      key={tab}
+                      className={`dark-code-tab${codeTab === tab ? " active" : ""}`}
+                      onClick={() => setCodeTab(tab)}
+                    >
+                      {tab}
+                    </div>
+                  ))}
+                </div>
+                <div className="dark-code-content">
+                  <pre>{codeSnippets[codeTab]}</pre>
+                  <button className="dark-copy-btn" onClick={handleCopyCode} title="Copy code">
+                    {detailCopied ? <Check size={14} color="#38bdf8" /> : <Copy size={14} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Detail Tabs Content: Glyphs, Languages, Weights, Metadata, License */}
+            {detailTab === "Glyphs" && (
+              <div style={{ padding: "0 28px 24px" }}>
+                <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: 10 }}>
+                  {copiedGlyph ? (
+                    <span style={{ color: "var(--accent)", fontWeight: 700 }}>Copied "{copiedGlyph}"!</span>
+                  ) : (
+                    "Click character to copy:"
+                  )}
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, maxHeight: 180, overflowY: "auto" }}>
+                  {activeGlyphsList.map((ch, i) => (
+                    <button
+                      key={`${ch}-${i}`}
+                      onClick={() => {
+                        navigator.clipboard.writeText(ch);
+                        setCopiedGlyph(ch);
+                        setTimeout(() => setCopiedGlyph(null), 1500);
+                      }}
+                      style={{
+                        width: 36,
+                        height: 36,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "var(--bg)",
+                        border: "1px solid var(--surface-border)",
+                        borderRadius: 6,
+                        fontFamily: `'${selectedFont.family}', ${selectedFallback}`,
+                        fontSize: "1rem",
+                      }}
+                    >
+                      {ch}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {detailTab === "Languages" && (
+              <div style={{ padding: "0 28px 24px" }}>
+                <div style={{ fontSize: "0.82rem", color: "var(--text-secondary)", marginBottom: 10 }}>
+                  Supported Writing Systems:
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {selectedFont.scripts.map((s) => (
+                    <span key={s} className="hero-popular-chip" style={{ cursor: "default" }}>
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {detailTab === "Weights" && (
+              <div style={{ padding: "0 28px 24px" }}>
+                <div style={{ fontSize: "0.82rem", color: "var(--text-secondary)", marginBottom: 10 }}>
+                  Available Optical Weights:
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {selectedFont.weights.map((w) => (
+                    <span
+                      key={w}
+                      className="hero-popular-chip"
+                      style={{
+                        cursor: "pointer",
+                        background: w === weight ? "var(--accent)" : undefined,
+                        color: w === weight ? "#fff" : undefined,
+                        borderColor: w === weight ? "var(--accent)" : undefined,
+                      }}
+                      onClick={() => setWeight(w)}
+                    >
+                      {w}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {detailTab === "Metadata" && (
+              <div style={{ padding: "0 28px 24px", fontSize: "0.82rem", lineHeight: 2, color: "var(--text-secondary)" }}>
+                <div><strong>Designer:</strong> {selectedFont.designer}</div>
+                <div><strong>Category:</strong> {selectedFont.category}</div>
+                <div><strong>Weights:</strong> {selectedFont.weights.join(", ")}</div>
+                <div><strong>Variable Font:</strong> {selectedFont.variable ? "Yes" : "No"}</div>
+              </div>
+            )}
+
+            {detailTab === "License" && (
+              <div style={{ padding: "0 28px 24px", fontSize: "0.82rem", lineHeight: 1.7, color: "var(--text-secondary)" }}>
+                <div><strong>License:</strong> {selectedFont.license}</div>
+                {selectedFont.licenseUrl && (
+                  <a
+                    href={selectedFont.licenseUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "var(--accent)", textDecoration: "underline", display: "inline-block", marginTop: 6 }}
+                  >
+                    View License Terms →
+                  </a>
+                )}
+              </div>
+            )}
+          </aside>
         </div>
       </div>
 
-      {/* Mobile navigation modal */}
+      {/* ── Modals ─────────────────────────────────────────── */}
+      {/* Mobile Drawer */}
       {mobileOpen && (
         <div className="modal-overlay open" onClick={() => setMobileOpen(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -2099,10 +1531,10 @@ export default function FontAtlasApp() {
                 ["Home", "home"],
                 ["All Fonts", "fonts"],
                 ["Languages", "languages"],
-                ["Playground", "playground"],
+                ["Design Playground", "playground"],
                 ["Font Pairings", "pairings"],
                 ["Font Tools", "tools"],
-                ["Favorites", "favorites"],
+                ["Collections", "favorites"],
                 ["API & CDN", "api"],
               ].map(([label, v]) => (
                 <div
@@ -2113,46 +1545,25 @@ export default function FontAtlasApp() {
                   {label}
                 </div>
               ))}
-              <div style={{ marginTop: 12, borderTop: "1px solid var(--surface-border)", paddingTop: 12 }}>
-                <div
-                  className="side-item"
-                  onClick={() => {
-                    setShowUpload(true);
-                    setMobileOpen(false);
-                  }}
-                >
-                  Test Local Font
-                </div>
-                <div
-                  className="side-item"
-                  onClick={() => {
-                    setShowAbout(true);
-                    setMobileOpen(false);
-                  }}
-                >
-                  About FontAtlas
-                </div>
-              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Local Font Upload & OpenType.js Inspector */}
+      {/* Local Font Upload Modal */}
       {showUpload && (
         <div className="modal-overlay open" onClick={() => setShowUpload(false)}>
-          <div className="modal" style={{ maxWidth: 540 }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <div className="modal-title">OpenType Local Font Inspector</div>
+              <div className="modal-title">Inspect Local Font (OpenType.js)</div>
               <button className="modal-close" onClick={() => setShowUpload(false)}>
                 <X size={18} />
               </button>
             </div>
             <div className="modal-body">
               <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: 20 }}>
-                Upload any <code>.ttf</code>, <code>.otf</code>, <code>.woff</code>, or <code>.woff2</code> font file.
-                FontAtlas uses <strong>OpenType.js</strong> to parse glyph tables, metrics, and font names completely
-                client-side without uploading to any remote server.
+                Upload any <code>.ttf</code>, <code>.otf</code>, or <code>.woff</code> file. Fonts are parsed locally
+                with OpenType.js and rendered directly in your browser.
               </p>
               <label
                 style={{
@@ -2160,21 +1571,16 @@ export default function FontAtlasApp() {
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: "36px 20px",
+                  padding: "40px 20px",
                   border: "2px dashed var(--accent)",
                   borderRadius: "var(--radius-lg)",
                   background: "var(--accent-light)",
                   cursor: "pointer",
-                  transition: "all var(--transition-fast)",
                 }}
               >
-                <Upload size={36} style={{ color: "var(--accent)", marginBottom: 12 }} />
-                <div style={{ fontSize: "1rem", fontWeight: 700, marginBottom: 4, color: "var(--text-primary)" }}>
-                  Click or drag font file to inspect
-                </div>
-                <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                  Supports TTF, OTF, WOFF, and WOFF2 formats
-                </div>
+                <Upload size={36} color="var(--accent)" style={{ marginBottom: 12 }} />
+                <div style={{ fontWeight: 700, marginBottom: 4 }}>Select font file to inspect</div>
+                <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>TTF, OTF, WOFF, WOFF2</div>
                 <input
                   type="file"
                   accept=".ttf,.otf,.woff2,.woff"
@@ -2184,24 +1590,10 @@ export default function FontAtlasApp() {
               </label>
 
               {uploadedData && (
-                <div style={{ marginTop: 24, padding: 16, background: "var(--bg)", borderRadius: "var(--radius-md)" }}>
-                  <div style={{ fontSize: "0.85rem", fontWeight: 700, marginBottom: 8 }}>
-                    Currently Loaded Font: {uploadedData.fontObj.family}
-                  </div>
-                  <div style={{ fontSize: "0.8rem", lineHeight: 1.8, color: "var(--text-secondary)" }}>
-                    <div>
-                      <strong>Designer:</strong> {uploadedData.fontObj.designer}
-                    </div>
-                    <div>
-                      <strong>Total Glyphs:</strong> {uploadedData.numGlyphs ?? "N/A"}
-                    </div>
-                    <div>
-                      <strong>Units Per EM:</strong> {uploadedData.unitsPerEm ?? "N/A"}
-                    </div>
-                    <div>
-                      <strong>Ascender / Descender:</strong> {uploadedData.ascender} / {uploadedData.descender}
-                    </div>
-                  </div>
+                <div style={{ marginTop: 20, padding: 14, background: "var(--bg)", borderRadius: 8, fontSize: "0.82rem", lineHeight: 1.8 }}>
+                  <div><strong>Font:</strong> {uploadedData.fontObj.family}</div>
+                  <div><strong>Glyphs:</strong> {uploadedData.numGlyphs ?? "N/A"}</div>
+                  <div><strong>Units Per EM:</strong> {uploadedData.unitsPerEm ?? "N/A"}</div>
                 </div>
               )}
             </div>
@@ -2214,167 +1606,10 @@ export default function FontAtlasApp() {
         </div>
       )}
 
-      {/* Weight Explorer Modal */}
-      {showWeightExplorer && (
-        <div className="modal-overlay open" onClick={() => setShowWeightExplorer(false)}>
-          <div className="modal" style={{ maxWidth: 680, maxHeight: "85vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div className="modal-title">Weight Spectrum Explorer — {selectedFont.family}</div>
-              <button className="modal-close" onClick={() => setShowWeightExplorer(false)}>
-                <X size={18} />
-              </button>
-            </div>
-            <div className="modal-body">
-              <div style={{ marginBottom: 20 }}>
-                <input
-                  className="control-input"
-                  placeholder="Type sample text to preview across weights..."
-                  value={text || sampleText}
-                  onChange={(e) => setText(e.target.value)}
-                />
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                {selectedFont.weights.map((w) => (
-                  <div
-                    key={w}
-                    style={{
-                      padding: "16px 20px",
-                      background: "var(--bg)",
-                      borderRadius: "var(--radius-md)",
-                      border: "1px solid var(--surface-border)",
-                    }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                      <span>Weight {w}</span>
-                      <span>font-weight: {w}</span>
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: `'${selectedFont.family}', ${getFontFallback(selectedFont.category)}`,
-                        fontWeight: w,
-                        fontSize: "24px",
-                        lineHeight: 1.3,
-                        color: "var(--text-primary)",
-                      }}
-                    >
-                      {text || sampleText}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-primary" onClick={() => setShowWeightExplorer(false)}>
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Interactive CSS Generator Modal */}
-      {showCssGenerator && (
-        <div className="modal-overlay open" onClick={() => setShowCssGenerator(false)}>
-          <div className="modal" style={{ maxWidth: 600 }} onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div className="modal-title">CSS & Embed Code Generator</div>
-              <button className="modal-close" onClick={() => setShowCssGenerator(false)}>
-                <X size={18} />
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="control-group" style={{ marginBottom: 16 }}>
-                <label className="control-label">
-                  <span>Selected Typeface</span>
-                </label>
-                <select
-                  className="control-input"
-                  value={selectedFont.slug}
-                  onChange={(e) => {
-                    const f = fonts.find((item) => item.slug === e.target.value);
-                    if (f) selectFont(f);
-                  }}
-                >
-                  {fonts.map((f) => (
-                    <option key={f.slug} value={f.slug}>
-                      {f.family} ({f.category})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="code-box">
-                <div className="code-tabs">
-                  {(["CDN", "CSS", "HTML", "Tailwind", "Next.js", "React"] as CodeTab[]).map((tab) => (
-                    <button
-                      key={tab}
-                      className={`code-tab${codeTab === tab ? " active" : ""}`}
-                      onClick={() => setCodeTab(tab)}
-                    >
-                      {tab}
-                    </button>
-                  ))}
-                </div>
-                <div className="code-content" style={{ maxHeight: 200, overflowY: "auto" }}>
-                  <pre>
-                    {codeTab === "CDN" && `<link href="${googleCssUrl(selectedFont)}" rel="stylesheet">`}
-                    {codeTab === "CSS" &&
-                      `@import url('${googleCssUrl(selectedFont)}');\n\nbody {\n  font-family: '${selectedFont.family}', ${getFontFallback(
-                        selectedFont.category
-                      )};\n}`}
-                    {codeTab === "HTML" &&
-                      `<link href="${googleCssUrl(selectedFont)}" rel="stylesheet">\n\n<h1 style="font-family: '${selectedFont.family}', ${getFontFallback(
-                        selectedFont.category
-                      )}">${selectedFont.family}</h1>`}
-                    {codeTab === "Tailwind" &&
-                      `// tailwind.config.js\nfontFamily: {\n  '${selectedFont.family.toLowerCase().replace(/\s+/g, "-")}': ['"${selectedFont.family}"', '${getFontFallback(
-                        selectedFont.category
-                      )}'],\n}`}
-                    {codeTab === "Next.js" &&
-                      `import { ${selectedFont.family.replace(/[\s-]+/g, "")} } from 'next/font/google'\n\nconst font = ${selectedFont.family.replace(
-                        /[\s-]+/g,
-                        ""
-                      )}({ subsets: ['latin'] })`}
-                    {codeTab === "React" &&
-                      `import '@fontsource/${selectedFont.family.toLowerCase().replace(/\s+/g, "-")}'`}
-                  </pre>
-                </div>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  let snippet = "";
-                  if (codeTab === "CDN") snippet = `<link href="${googleCssUrl(selectedFont)}" rel="stylesheet">`;
-                  else if (codeTab === "CSS")
-                    snippet = `@import url('${googleCssUrl(selectedFont)}');\n\nbody {\n  font-family: '${selectedFont.family}', ${getFontFallback(
-                      selectedFont.category
-                    )};\n}`;
-                  else if (codeTab === "HTML")
-                    snippet = `<link href="${googleCssUrl(selectedFont)}" rel="stylesheet">\n\n<h1 style="font-family: '${selectedFont.family}'">${selectedFont.family}</h1>`;
-                  else if (codeTab === "Tailwind")
-                    snippet = `'${selectedFont.family.toLowerCase().replace(/\s+/g, "-")}': ['"${selectedFont.family}"', '${getFontFallback(
-                      selectedFont.category
-                    )}'],`;
-                  else if (codeTab === "Next.js")
-                    snippet = `import { ${selectedFont.family.replace(/[\s-]+/g, "")} } from 'next/font/google'`;
-                  else snippet = `import '@fontsource/${selectedFont.family.toLowerCase().replace(/\s+/g, "-")}'`;
-                  navigator.clipboard.writeText(snippet);
-                  setShowCssGenerator(false);
-                }}
-              >
-                Copy & Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* About FontAtlas Modal */}
+      {/* About Modal */}
       {showAbout && (
         <div className="modal-overlay open" onClick={() => setShowAbout(false)}>
-          <div className="modal" style={{ maxWidth: 560 }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title">About FontAtlas</div>
               <button className="modal-close" onClick={() => setShowAbout(false)}>
@@ -2384,23 +1619,22 @@ export default function FontAtlasApp() {
             <div className="modal-body" style={{ fontSize: "0.9rem", lineHeight: 1.8, color: "var(--text-secondary)" }}>
               <p style={{ marginBottom: 12 }}>
                 <strong>FontAtlas</strong> is an open-source, no-login font discovery and developer integration
-                platform created by <strong>JOJIN JOHN</strong>.
+                platform designed and built by <strong>JOJIN JOHN</strong>.
               </p>
-              <p style={{ marginBottom: 12 }}>
-                Finding and previewing open web fonts shouldn't require creating an account, surrendering personal data,
-                or wrestling with complex embed links. FontAtlas gives you instant live previews, custom text testing,
-                multilingual script coverage, and code snippets for modern web frameworks.
+              <p style={{ marginBottom: 14 }}>
+                It gives designers and developers instant access to over 58 curated typefaces with live specimens,
+                multilingual script support, pair testing, and copy-paste code snippets for React, Next.js, and Tailwind CSS.
               </p>
-              <div style={{ padding: 16, background: "var(--bg)", borderRadius: "var(--radius-md)", marginBottom: 16 }}>
-                <div><strong>Stack:</strong> Next.js 15, React 19, TypeScript, OpenType.js</div>
-                <div><strong>Web Delivery:</strong> Google Fonts upstream CDN</div>
-                <div><strong>License:</strong> MIT License (Codebase)</div>
+              <div style={{ padding: 14, background: "var(--bg)", borderRadius: 8, fontSize: "0.85rem" }}>
+                <div><strong>Stack:</strong> Next.js 15, React 19, OpenType.js, TypeScript</div>
+                <div><strong>Delivery:</strong> Official Google Fonts CDN</div>
+                <div><strong>License:</strong> MIT License</div>
                 <div><strong>Author:</strong> JOJIN JOHN (<a href="https://github.com/jojin1709" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)" }}>@jojin1709</a>)</div>
               </div>
             </div>
             <div className="modal-footer">
               <button className="btn btn-primary" onClick={() => setShowAbout(false)}>
-                Got it
+                Close
               </button>
             </div>
           </div>
@@ -2410,29 +1644,25 @@ export default function FontAtlasApp() {
       {/* License Modal */}
       {showLicense && (
         <div className="modal-overlay open" onClick={() => setShowLicense(false)}>
-          <div className="modal" style={{ maxWidth: 540 }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <div className="modal-title">Licensing & Terms</div>
+              <div className="modal-title">License & Attribution</div>
               <button className="modal-close" onClick={() => setShowLicense(false)}>
                 <X size={18} />
               </button>
             </div>
             <div className="modal-body" style={{ fontSize: "0.88rem", lineHeight: 1.8, color: "var(--text-secondary)" }}>
               <p style={{ marginBottom: 12 }}>
-                The FontAtlas web application and integration API are released under the <strong>MIT License</strong>.
-              </p>
-              <p style={{ marginBottom: 12 }}>
-                All typefaces featured in the FontAtlas catalog are open-source and licensed under author-defined upstream
-                agreements—principally the <strong>SIL Open Font License 1.1</strong> or <strong>Apache License 2.0</strong>.
+                The FontAtlas web application and APIs are licensed under the <strong>MIT License</strong>.
               </p>
               <p>
-                FontAtlas does not claim ownership or mirror font files directly without permission; fonts are loaded directly
-                from verified upstream CDNs (Google Fonts).
+                All fonts showcased are open-source and subject to their upstream author licenses (SIL Open Font
+                License 1.1 or Apache License 2.0). Fonts are loaded directly from official CDNs.
               </p>
             </div>
             <div className="modal-footer">
               <button className="btn btn-primary" onClick={() => setShowLicense(false)}>
-                Close
+                Understood
               </button>
             </div>
           </div>
