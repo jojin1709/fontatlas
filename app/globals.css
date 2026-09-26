@@ -970,6 +970,66 @@ input, select, textarea {
   white-space: nowrap;
 }
 
+.phonetic-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.phonetic-toggle-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.phonetic-toggle-btn.active {
+  background: #4f46e5;
+  color: #ffffff;
+  border-color: #4f46e5;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+.quick-words-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.quick-words-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-word-chip {
+  padding: 2px 8px;
+  font-size: 0.74rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  color: var(--text-primary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.quick-word-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg);
+}
+
 .specimen-preset-select {
   padding: 4px 8px;
   font-size: 0.76rem;

@@ -51,6 +51,7 @@ import {
   scriptSpecimens,
   scripts,
 } from "../lib/fonts";
+import { scriptQuickWords, transliterateToScript } from "../lib/transliterate";
 
 type View =
   | "home"
@@ -197,6 +198,7 @@ export default function FontAtlasApp() {
   const [detailCopied, setDetailCopied] = useState(false);
   const [copiedGlyph, setCopiedGlyph] = useState<string | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(true);
+  const [phoneticMode, setPhoneticMode] = useState(true);
   const [pairingHeadingFont, setPairingHeadingFont] = useState<Font>(fonts[0]);
   const [pairingBodyFont, setPairingBodyFont] = useState<Font>(() => fonts.find((f) => f.slug === "lora") || fonts[1]);
   const [playgroundAlign, setPlaygroundAlign] = useState<"left" | "center" | "right">("left");
@@ -1459,9 +1461,21 @@ export default function FontAtlasApp() {
               {/* Structured Specimen Toolbar with Script Badge and Full-width Input */}
               <div className="specimen-toolbar-wrap">
                 <div className="specimen-toolbar-header">
-                  <span className="specimen-badge">
-                    {getFontPrimaryScript(selectedFont, script)} ({scriptSpecimens[getFontPrimaryScript(selectedFont, script)]?.nativeName || "Native"})
-                  </span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                    <span className="specimen-badge">
+                      {getFontPrimaryScript(selectedFont, script)} ({scriptSpecimens[getFontPrimaryScript(selectedFont, script)]?.nativeName || "Native"})
+                    </span>
+                    {getFontPrimaryScript(selectedFont, script) !== "Latin" && (
+                      <button
+                        className={`phonetic-toggle-btn${phoneticMode ? " active" : ""}`}
+                        onClick={() => setPhoneticMode(!phoneticMode)}
+                        title={phoneticMode ? "Phonetic input is ON: typing in English automatically converts to native script" : "Click to turn ON English-to-native phonetic typing"}
+                      >
+                        <Sparkles size={11} />
+                        <span>Aa ➔ {scriptSpecimens[getFontPrimaryScript(selectedFont, script)]?.char || "അ"} Phonetic: {phoneticMode ? "ON" : "OFF"}</span>
+                      </button>
+                    )}
+                  </div>
                   <select
                     className="specimen-preset-select"
                     onChange={(e) => {
@@ -1486,8 +1500,20 @@ export default function FontAtlasApp() {
                   <input
                     className="specimen-text-input-field"
                     value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder="Type anything to preview..."
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const primScript = getFontPrimaryScript(selectedFont, script);
+                      if (phoneticMode && primScript !== "Latin") {
+                        setText(transliterateToScript(val, primScript));
+                      } else {
+                        setText(val);
+                      }
+                    }}
+                    placeholder={
+                      getFontPrimaryScript(selectedFont, script) !== "Latin" && phoneticMode
+                        ? `Type English (e.g. ambud, namaskaram) to auto-convert to ${getFontPrimaryScript(selectedFont, script)}...`
+                        : "Type anything to preview..."
+                    }
                   />
                   {text && (
                     <button
@@ -1499,6 +1525,23 @@ export default function FontAtlasApp() {
                     </button>
                   )}
                 </div>
+
+                {/* Quick Native Words Chips */}
+                {scriptQuickWords[getFontPrimaryScript(selectedFont, script)] && (
+                  <div className="quick-words-bar">
+                    <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", whiteSpace: "nowrap" }}>Quick words:</span>
+                    {scriptQuickWords[getFontPrimaryScript(selectedFont, script)].map((qw) => (
+                      <button
+                        key={qw.label}
+                        className="quick-word-chip"
+                        onClick={() => setText(qw.native)}
+                        title={`Click to preview "${qw.native}" (${qw.label})`}
+                      >
+                        {qw.native} <span style={{ opacity: 0.6, fontSize: "0.68rem" }}>({qw.label})</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Live Specimen Preview */}
@@ -1513,7 +1556,7 @@ export default function FontAtlasApp() {
                     color: "var(--text-primary)",
                   }}
                 >
-                  {text || sampleText}
+                  {text}
                 </div>
               </div>
 
