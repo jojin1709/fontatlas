@@ -75,7 +75,23 @@ export const fonts: Font[] = [
   { slug:"noto-sans-gurmukhi", family:"Noto Sans Gurmukhi", designer:"Google", category:"Sans Serif", tags:["gurmukhi","punjabi","multilingual","unicode"], scripts:["Gurmukhi"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Gurmukhi", googleFamily:g("Noto Sans Gurmukhi"), description:"A Gurmukhi sans-serif family designed for high legibility." },
   { slug:"noto-sans-thai", family:"Noto Sans Thai", designer:"Google", category:"Sans Serif", tags:["thai","multilingual","unicode","ui"], scripts:["Thai"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Thai", googleFamily:g("Noto Sans Thai"), description:"A Thai sans-serif family suitable for user interfaces." },
   { slug:"noto-sans-georgian", family:"Noto Sans Georgian", designer:"Google", category:"Sans Serif", tags:["georgian","multilingual","unicode","ui"], scripts:["Georgian"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Georgian", googleFamily:g("Noto Sans Georgian"), description:"A Georgian sans-serif family covering the complete Georgian script." },
-  { slug:"noto-sans-armenian", family:"Noto Sans Armenian", designer:"Google", category:"Sans Serif", tags:["armenian","multilingual","unicode","ui"], scripts:["Armenian"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Armenian", googleFamily:g("Noto Sans Armenian"), description:"An Armenian sans-serif family designed for interface harmony." }
+  { slug:"noto-sans-armenian", family:"Noto Sans Armenian", designer:"Google", category:"Sans Serif", tags:["armenian","multilingual","unicode","ui"], scripts:["Armenian"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Noto+Sans+Armenian", googleFamily:g("Noto Sans Armenian"), description:"An Armenian sans-serif family designed for interface harmony." },
+  { slug:"gayathri", family:"Gayathri", designer:"SMC", category:"Sans Serif", tags:["malayalam","kerala","unicode","reading"], scripts:["Malayalam"], weights:[100,400,700], variable:false, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Gayathri", googleFamily:g("Gayathri"), description:"A gentle and readable Malayalam typeface designed for long-form reading." },
+  { slug:"manjari", family:"Manjari", designer:"Santhosh Thottingal", category:"Sans Serif", tags:["malayalam","rounded","modern","ui"], scripts:["Malayalam"], weights:[100,400,700], variable:false, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Manjari", googleFamily:g("Manjari"), description:"A modern rounded Malayalam sans-serif optimized for screens." },
+  { slug:"chilanka", family:"Chilanka", designer:"Santhosh Thottingal", category:"Handwriting", tags:["malayalam","handwriting","casual","script"], scripts:["Malayalam"], weights:[400], variable:false, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Chilanka", googleFamily:g("Chilanka"), description:"A lively, organic handwritten Malayalam typeface." },
+  { slug:"anek-malayalam", family:"Anek Malayalam", designer:"Ek Type", category:"Sans Serif", tags:["malayalam","variable","modern","branding"], scripts:["Malayalam"], weights:[100,200,300,400,500,600,700,800], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Anek+Malayalam", googleFamily:g("Anek Malayalam"), description:"A versatile, contemporary Malayalam type family with expressive weights." },
+  { slug:"anek-tamil", family:"Anek Tamil", designer:"Ek Type", category:"Sans Serif", tags:["tamil","variable","modern","ui"], scripts:["Tamil"], weights:[100,200,300,400,500,600,700,800], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Anek+Tamil", googleFamily:g("Anek Tamil"), description:"A bold, adaptable Tamil variable typeface for headlines and branding." },
+  { slug:"mukta-malar", family:"Mukta Malar", designer:"Ek Type", category:"Sans Serif", tags:["tamil","clean","readable","modern"], scripts:["Tamil"], weights:[200,300,400,500,600,700,800], variable:false, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Mukta+Malar", googleFamily:g("Mukta Malar"), description:"A contemporary Tamil humanist sans-serif with excellent legibility." },
+  { slug:"anek-telugu", family:"Anek Telugu", designer:"Ek Type", category:"Sans Serif", tags:["telugu","variable","modern","display"], scripts:["Telugu"], weights:[100,200,300,400,500,600,700,800], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Anek+Telugu", googleFamily:g("Anek Telugu"), description:"An expressive Telugu variable font tuned for screen display." },
+  { slug:"anek-kannada", family:"Anek Kannada", designer:"Ek Type", category:"Sans Serif", tags:["kannada","variable","modern","ui"], scripts:["Kannada"], weights:[100,200,300,400,500,600,700,800], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Anek+Kannada", googleFamily:g("Anek Kannada"), description:"A contemporary Kannada variable typeface family for web and print." },
+  { slug:"anek-bangla", family:"Anek Bangla", designer:"Ek Type", category:"Sans Serif", tags:["bengali","variable","modern","branding"], scripts:["Bengali"], weights:[100,200,300,400,500,600,700,800], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Anek+Bangla", googleFamily:g("Anek Bangla"), description:"An expressive Bengali variable font with extensive typographic weight." },
+  { slug:"anek-gujarati", family:"Anek Gujarati", designer:"Ek Type", category:"Sans Serif", tags:["gujarati","variable","modern","ui"], scripts:["Gujarati"], weights:[100,200,300,400,500,600,700,800], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Anek+Gujarati", googleFamily:g("Anek Gujarati"), description:"A versatile Gujarati variable typeface engineered for clarity." },
+  { slug:"anek-gurmukhi", family:"Anek Gurmukhi", designer:"Ek Type", category:"Sans Serif", tags:["gurmukhi","punjabi","variable","modern"], scripts:["Gurmukhi"], weights:[100,200,300,400,500,600,700,800], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Anek+Gurmukhi", googleFamily:g("Anek Gurmukhi"), description:"A flexible Gurmukhi variable typeface for digital interfaces." },
+  { slug:"mukta", family:"Mukta", designer:"Ek Type", category:"Sans Serif", tags:["devanagari","hindi","clean","modern"], scripts:["Devanagari"], weights:[200,300,400,500,600,700,800], variable:false, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Mukta", googleFamily:g("Mukta"), description:"A versatile Devanagari sans-serif family for digital typography." },
+  { slug:"cairo", family:"Cairo", designer:"Mohamed Gaber", category:"Sans Serif", tags:["arabic","modern","branding","ui"], scripts:["Arabic"], weights:[200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Cairo", googleFamily:g("Cairo"), description:"A contemporary Arabic typeface with wide geographic appeal." },
+  { slug:"amiri", family:"Amiri", designer:"Khaled Hosny", category:"Serif", tags:["arabic","naskh","classic","editorial"], scripts:["Arabic"], weights:[400,700], variable:false, styles:["normal","italic"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Amiri", googleFamily:g("Amiri"), description:"A classical Arabic typeface in the Naskh style for fine book typography." },
+  { slug:"heebo", family:"Heebo", designer:"Oded Ezer", category:"Sans Serif", tags:["hebrew","modern","clean","ui"], scripts:["Hebrew"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Heebo", googleFamily:g("Heebo"), description:"A clean Hebrew and Latin typeface designed for digital readability." },
+  { slug:"kanit", family:"Kanit", designer:"Cadson Demak", category:"Sans Serif", tags:["thai","modern","geometric","ui"], scripts:["Thai"], weights:[100,200,300,400,500,600,700,800,900], variable:true, styles:["normal","italic"], license:"SIL Open Font License 1.1", licenseUrl:"https://scripts.sil.org/OFL", sourceUrl:"https://fonts.google.com/specimen/Kanit", googleFamily:g("Kanit"), description:"A modern geometric Thai typeface with warm personality." }
 ];
 
 export const categories = ["Sans Serif","Serif","Slab Serif","Monospace","Display","Handwriting","Script","Blackletter","Pixel"];
@@ -105,4 +121,163 @@ export function googleCssUrl(font: Font, weights?: number[]) {
   const axis = unique.join(";");
   const family = font.googleFamily;
   return `https://fonts.googleapis.com/css2?family=${family}:wght@${axis}&display=swap`;
+}
+
+export const scriptSpecimens: Record<string, { nativeName: string; char: string; text: string; phrase: string; alphabet: string; numerals: string }> = {
+  Malayalam: {
+    nativeName: "മലയാളം",
+    char: "അ",
+    text: "മനോഹരമായ മലയാളം ലിപി രൂപകൽപ്പന.",
+    phrase: "എല്ലാ മനുഷ്യരും തുല്യാവകാശങ്ങളോടെ സ്വതന്ത്രരായി ജനിക്കുന്നു.",
+    alphabet: "അ ആ ഇ ഈ ഉ ഊ ഋ എ ഏ ഐ ഒ ഓ ഔ ക ഖ ഗ ഘ ങ ച ഛ ജ ഝ ഞ ട ഠ ഡ ഢ ണ ത ഥ ദ ധ ന പ ഫ ബ ഭ മ യ ര ല വ ശ ഷ സ ഹ ള ഴ റ",
+    numerals: "൦ ൧ ൨ ൩ ൪ ൫ ൬ ൭ ൮ ൯"
+  },
+  Devanagari: {
+    nativeName: "हिन्दी / देवनागरी",
+    char: "अ",
+    text: "सुंदर और सुस्पष्ट देवनागरी लिपि।",
+    phrase: "सभी मनुष्य जन्म से स्वतंत्र और समान अधिकार वाले हैं।",
+    alphabet: "अ आ इ ई उ ऊ ऋ ए ऐ ओ औ क ख ग घ ङ च छ ज झ ञ ट ठ ड ढ ण त थ द ध न प फ ब भ म य र ल व श ष स ह",
+    numerals: "० १ २ ३ ४ ५ ६ ७ ८ ९"
+  },
+  Tamil: {
+    nativeName: "தமிழ்",
+    char: "அ",
+    text: "அழகான தமிழ் எழுத்து வடிவமைப்பு.",
+    phrase: "மனிதர்கள் அனைவரும் சுதந்திரமாகவே பிறக்கின்றனர்.",
+    alphabet: "அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ க ங ச ஞ ட ண த ந ப ம ய ர ல வ ழ ள ற ன",
+    numerals: "௦ ௧ ௨ ௩ ௪ ௫ ௬ ௭ ௮ ௯"
+  },
+  Kannada: {
+    nativeName: "ಕನ್ನಡ",
+    char: "ಅ",
+    text: "ಸುಂದರವಾದ ಕನ್ನಡ ಲಿಪಿ ವಿನ್ಯಾಸ.",
+    phrase: "ಎಲ್ಲಾ ಮಾನವರೂ ಸ್ವತಂತ್ರವಾಗಿ ಸಮಾನ ಗೌರವದಿಂದ ಜನಿಸಿದ್ದಾರೆ.",
+    alphabet: "ಅ ಆ ಇ ಈ ಉ ಊ ಋ ಎ ಏ ಐ ಒ ಓ ಔ ಕ ಖ ಗ ಘ ಙ ಚ ಛ ಜ ಝ ಞ ಟ ಠ ಡ ಢ ಣ ತ ಥ ದ ಧ ನ ಪ ಫ ಬ ಭ ಮ ಯ ರ ಲ ವ ಶ ಷ ಸ ಹ ಳ",
+    numerals: "೦ ೧ ೨ ೩ ೪ ೫ ೬ ೭ ೮ ೯"
+  },
+  Telugu: {
+    nativeName: "తెలుగు",
+    char: "అ",
+    text: "అందమైన తెలుగు లిపి నమూనా.",
+    phrase: "మానవులందరూ పుట్టుకతోనే స్వతంత్రులు మరియు సమానులు.",
+    alphabet: "అ ఆ ఇ ఈ ఉ ఊ ఋ ఎ ఏ ఐ ఒ ఓ ఔ క ఖ గ ఘ ఙ చ ఛ జ ఝ ఞ ట ఠ డ ఢ ణ త థ ద ధ న ప ఫ బ భ మ య ర ల వ శ ష స హ ళ",
+    numerals: "౦ ౧ ౨ ౩ ౪ ౫ ౬ ౭ ౮ ౯"
+  },
+  Bengali: {
+    nativeName: "বাংলা",
+    char: "অ",
+    text: "সুন্দর ও স্পষ্ট বাংলা লিপি টাইপোগ্রাফি।",
+    phrase: "সমস্ত মানুষ স্বাধীনভাবে সমান মর্যাদা নিয়ে জন্মগ্রহণ করে।",
+    alphabet: "অ আ ই ঈ উ ঊ ঋ এ ঐ ও ঔ ক খ গ ঘ ঙ চ ছ জ ঝ ঞ ট ঠ ড ঢ ণ ত থ দ ধ ন প ফ ব ভ ম য র ল শ ষ স হ",
+    numerals: "০ ১ ২ ৩ ৪ ৫ ৬ ৭ ৮ ৯"
+  },
+  Gujarati: {
+    nativeName: "ગુજરાતી",
+    char: "અ",
+    text: "સુંદર અને સ્પષ્ટ ગુજરાતી લિપિ ડિઝાઇન.",
+    phrase: "બધા મનુષ્યો જન્મથી સ્વતંત્ર અને સમાન છે.",
+    alphabet: "અ આ ઇ ઈ ઉ ઊ ઋ એ ઐ ઓ ઔ ક ખ ગ ઘ ઙ ચ છ જ ઝ ઞ ટ ઠ ડ ઢ ણ ત થ દ ધ ન પ ફ બ ભ મ ય ર લ વ શ ષ સ હ",
+    numerals: "૦ ૧ ૨ ૩ ૪ ૫ ૬ ૭ ૮ ૯"
+  },
+  Gurmukhi: {
+    nativeName: "ਪੰਜਾਬੀ / ਗੁਰਮੁਖੀ",
+    char: "ਅ",
+    text: "ਸੁੰਦਰ ਅਤੇ ਸਪੱਸ਼ਟ ਗੁਰਮੁਖੀ ਲਿਪੀ।",
+    phrase: "ਸਾਰੇ ਮਨੁੱਖ ਆਜ਼ਾਦ ਅਤੇ ਬਰਾਬਰ ਸਨਮਾਨ ਨਾਲ ਪੈਦਾ ਹੋਏ ਹਨ।",
+    alphabet: "ਅ ਆ ਇ ਈ ਉ ਊ ਏ ਐ ਓ ਔ ਕ ਖ ਗ ਘ ਙ ਚ ਛ ਜ ਝ ਞ ਟ ਠ ਡ ਢ ਣ ਤ ਥ ਦ ਧ ਨ ਪ ਫ ਬ ਭ ਮ ਯ ਰ ਲ ਵ ੜ",
+    numerals: "੦ ੧ ੨ ੩ ੪ ੫ ੬ ੭ ੮ ੯"
+  },
+  Thai: {
+    nativeName: "ไทย",
+    char: "ก",
+    text: "การออกแบบตัวอักษรไทยที่สวยงามและชัดเจน",
+    phrase: "มนุษย์ทั้งปวงเกิดมามีอิสระและเสมอภาคกันในศักดิ์ศรี",
+    alphabet: "ก ข ฃ ค ฅ ฆ ง จ ฉ ช ซ ฌ ญ ฎ ฏ ฐ ฑ ฒ ณ ด ต ถ ท ธ น บ ป ผ ฝ พ ฟ ภ ม ย ร ล ว ศ ษ ส ห ฬ อ ฮ",
+    numerals: "๐ ๑ ๒ ๓ ๔ ๕ ๖ ๗ ฃ ๙"
+  },
+  Georgian: {
+    nativeName: "ქართული",
+    char: "ა",
+    text: "დახვეწილი და მკაფიო ქართული დამწერლობა.",
+    phrase: "ყველა ადამიანი იბადება თავისუფალი და თანასწორი.",
+    alphabet: "ა ბ გ დ ე ვ ზ თ ი კ ლ მ ნ ო პ ჟ რ ს ტ უ ფ ქ ღ ყ შ ჩ ც ძ წ ჭ ხ ჯ ჰ",
+    numerals: "1 2 3 4 5 6 7 8 9 0"
+  },
+  Armenian: {
+    nativeName: "Հայերեն",
+    char: "Ա",
+    text: "Գեղեցիկ և հստակ հայերեն տառատեսակ։",
+    phrase: "Բոլոր մարդիկ ծնվում են ազատ ու հավասար։",
+    alphabet: "Ա Բ Գ Դ Ե Զ Է Ը Թ Ժ Ի Լ Խ Ծ Կ Հ Ձ Ղ Ճ Մ Յ Ն Շ Ո Չ Պ Ջ Ռ Ս Վ Տ Ր Ց Ւ Փ Ք Օ Ֆ",
+    numerals: "1 2 3 4 5 6 7 8 9 0"
+  },
+  Arabic: {
+    nativeName: "العربية",
+    char: "ض",
+    text: "تصميم خط عربي أنيق وواضح للقراءة الرقمية.",
+    phrase: "يولد جميع الناس أحراراً ومتساوين في الكرامة والحقوق.",
+    alphabet: "أ ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن هـ و ي",
+    numerals: "٠ ١ ٢ ٣ ٤ ٥ ٦ ٧ ٨ ٩"
+  },
+  Hebrew: {
+    nativeName: "עִברִית",
+    char: "א",
+    text: "עיצוב טיපוגרפי עברי מודרני וקריא.",
+    phrase: "כל בני אדם נולדו בני חורין ושווים בערכם ובזכויותיהם.",
+    alphabet: "א ב ג ד ה ו ז ח ט י כ ל מ נ ס ע פ צ ק ר ש ת",
+    numerals: "1 2 3 4 5 6 7 8 9 0"
+  },
+  Greek: {
+    nativeName: "Ελληνικά",
+    char: "Ω",
+    text: "Κομψή και ευανάγνωστη ελληνική τυπογραφία.",
+    phrase: "Όλοι οι άνθρωποι γεννιούνται ελεύθεροι και ίσοι στην αξιοπρέπεια.",
+    alphabet: "Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω",
+    numerals: "1 2 3 4 5 6 7 8 9 0"
+  },
+  Cyrillic: {
+    nativeName: "Кириллица",
+    char: "Ж",
+    text: "Выразительная и чистая кириллическая типографика.",
+    phrase: "Все люди рождаются свободными и равными в своем достоинстве.",
+    alphabet: "А Б В Г Д Е Ж З И Й К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Ъ Ы Ь Э Ю Я а б в г д е ж з и й к л м н о п р с т у ф х ц ч ш щ ъ ы ь э ю я",
+    numerals: "1 2 3 4 5 6 7 8 9 0"
+  },
+  Vietnamese: {
+    nativeName: "Tiếng Việt",
+    char: "Ơ",
+    text: "Kiểu chữ tiếng Việt hiện đại và trang nhã.",
+    phrase: "Tất cả mọi người sinh ra đều được tự do và bình đẳng.",
+    alphabet: "A Ă Â B C D Đ E Ê G H I K L M N O Ô Ơ P Q R S T U Ư V X Y a ă â b c d đ e ê g h i k l m n o ô ơ p q r s t u ư v x y",
+    numerals: "0 1 2 3 4 5 6 7 8 9"
+  },
+  Latin: {
+    nativeName: "Latin / English",
+    char: "Aa",
+    text: "The quick brown fox jumps over the lazy dog.",
+    phrase: "Almost before we knew it, we had left the ground.",
+    alphabet: "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z",
+    numerals: "0 1 2 3 4 5 6 7 8 9 ! @ # $ % & *"
+  }
+};
+
+export function getFontPrimaryScript(font: Font, activeFilterScript?: string): string {
+  if (activeFilterScript && font.scripts.includes(activeFilterScript)) {
+    return activeFilterScript;
+  }
+  const nonLatin = font.scripts.find((s) => s !== "Latin");
+  if (nonLatin) return nonLatin;
+  return font.scripts[0] || "Latin";
+}
+
+export function getFontSampleChar(font: Font, activeFilterScript?: string): string {
+  if (font.slug === "press-start-2p") return "▪▪";
+  const script = getFontPrimaryScript(font, activeFilterScript);
+  return scriptSpecimens[script]?.char || "Aa";
+}
+
+export function getFontDefaultText(font: Font, activeFilterScript?: string): string {
+  const script = getFontPrimaryScript(font, activeFilterScript);
+  return scriptSpecimens[script]?.text || "The quick brown fox jumps over the lazy dog.";
 }

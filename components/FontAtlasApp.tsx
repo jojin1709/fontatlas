@@ -43,8 +43,12 @@ import {
   Font,
   categories,
   fonts,
+  getFontDefaultText,
   getFontFallback,
+  getFontPrimaryScript,
+  getFontSampleChar,
   googleCssUrl,
+  scriptSpecimens,
   scripts,
 } from "../lib/fonts";
 
@@ -118,33 +122,33 @@ const fontTaglines: Record<string, string> = {
   "archivo-narrow": "Space-saving compact headlines.",
   "noto-sans-malayalam": "Comprehensive Malayalam Unicode.",
   "noto-serif-malayalam": "Editorial Malayalam reading serif.",
-  "noto-sans-devanagari": "Complete Devanagari Unicode.",
+  gayathri: "Traditional Kerala Malayalam serif.",
+  manjari: "Modern rounded Malayalam interface type.",
+  chilanka: "Organic handwritten Malayalam script.",
+  "anek-malayalam": "Bold contemporary Malayalam variable font.",
   "noto-sans-tamil": "Extensive Tamil script coverage.",
-  "noto-sans-kannada": "Harmonious Kannada typeface.",
+  "anek-tamil": "Contemporary Tamil variable font.",
+  "mukta-malar": "Readable humanist Tamil typeface.",
+  "noto-sans-devanagari": "Complete Devanagari Unicode.",
+  mukta: "Versatile Hindi & Devanagari text family.",
   "noto-sans-telugu": "Clear Telugu digital reading.",
+  "anek-telugu": "Expressive Telugu variable display font.",
+  "noto-sans-kannada": "Harmonious Kannada typeface.",
+  "anek-kannada": "Contemporary Kannada variable typeface.",
+  "noto-sans-bengali": "Crisp Bengali digital reading.",
+  "anek-bangla": "Expressive Bengali variable typography.",
+  "noto-sans-gujarati": "Classic Gujarati script clarity.",
+  "anek-gujarati": "Engineered Gujarati variable family.",
+  "noto-sans-gurmukhi": "Clean Punjabi & Gurmukhi letterforms.",
+  "anek-gurmukhi": "Modern Gurmukhi variable type.",
+  "noto-sans-thai": "Harmonious Thai interface typeface.",
+  kanit: "Geometric Thai with warm curves.",
+  cairo: "Contemporary Arabic typeface.",
+  amiri: "Classical Arabic Naskh book font.",
+  heebo: "Clean Hebrew digital reading font.",
   "ibm-plex-sans": "Engineered technical brand clarity.",
   "source-code-pro": "Open-source developer staple.",
   quicksand: "Light, friendly geometric rhythm.",
-};
-
-const scriptGlyphs: Record<string, string> = {
-  Malayalam: "അ ആ ഇ ഈ ഉ ഊ ഋ എ ഏ ഐ ഒ ഓ ഔ ക ഖ ഗ ഘ ങ ച ഛ ജ ഝ ഞ ട ഠ ഡ ഢ ണ ത ഥ ദ ധ ന പ ഫ ബ ഭ മ യ ര ല വ ശ ഷ സ ഹ ള ഴ റ 0 1 2 3 4 5 6 7 8 9",
-  Devanagari: "अ आ इ ई उ ऊ ऋ ए ऐ ओ औ क ख ग घ ङ च छ ज झ ञ ट ठ ड ढ ण त थ द ध न प फ ब भ म य र ल व श ष स ह ० १ २ ३ ४ ५ ६ ७ ८ ९",
-  Tamil: "அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ க ங ச ஞ ட ண த ந ப ம ய ர ல வ ழ ள ற ன ௦ ௧ ௨ ௩ ௪ ௫ ௬ ௭ ௮ ௯",
-  Kannada: "ಅ ಆ ಇ ಈ ಉ ಊ ಋ ಎ ಏ ಐ ಒ ಓ ಔ ಕ ಖ ಗ ಘ ಙ ಚ ಛ ಜ ಝ ಞ ಟ ಠ ಡ ಢ ಣ ತ ಥ ದ ಧ ನ ಪ ಫ ಬ ಭ ಮ ಯ ರ ಲ ವ ಶ ಷ ಸ ಹ ಳ ೦ ೧ ೨ ೩ ೪ ೫ ೬ ೭ ೮ ೯",
-  Telugu: "అ ఆ ఇ ఈ ఉ ఊ ఋ ఎ ఏ ఐ ఒ ఓ ఔ క ఖ గ ఘ ఙ చ ఛ జ ఝ ఞ ట ఠ డ ఢ ణ త థ ద ధ న ప ఫ బ ഭ మ య ర ల వ శ ష స హ ళ ౦ ౧ ౨ ౩ ౪ ౫ ౬ ౭ ౮ ౯",
-  Bengali: "অ আ ই ঈ উ ঊ ঋ এ ঐ ও ঔ ক খ গ ঘ ঙ চ ছ জ ঝ ঞ ট ঠ ড ঢ ণ ত থ দ ধ ন প ফ ব ভ ম য র ল শ ষ স হ ০ ১ ২ ৩ ৪ ৫ ৬ ৭ ৮ ৯",
-  Gujarati: "અ આ ઇ ઈ ઉ ઊ ઋ એ ઐ ઓ ઔ ક ખ ગ ઘ ઙ ચ છ જ ઝ ઞ ટ ઠ ડ ઢ ણ ત થ દ ધ ન પ ફ બ ભ મ ય ર લ વ શ ષ સ હ ૦ ૧ ૨ ૩ ૪ ૫ ૬ ૭ ૮ ૯",
-  Gurmukhi: "ਅ ਆ ਇ ਈ ਉ ਊ ਏ ਐ ਓ ਔ ਕ ਖ ਗ ਘ ਙ ਚ ਛ ਜ ਝ ਞ ਟ ਠ ਡ ਢ ਣ ਤ ਥ ਦ ਧ ਨ ਪ ਫ ਬ ਭ ਮ ਯ ਰ ਲ ਵ ੜ ੦ ੧ ੨ ੩ ੪ ੫ ੬ ੭ ੮ ੯",
-  Thai: "ก ข ฃ ค ฅ ฆ ง จ ฉ ช ซ ฌ ญ ฎ ฏ ฐ ฑ ฒ ณ ด ต ถ ท ธ น บ ป ผ ฝ พ ฟ ภ ม ย ร ล ว ศ ษ ส ห ฬ อ ฮ ๐ ๑ ๒ ๓ ๔ ๕ ๖ ๗ ๘ ๙",
-  Georgian: "ა ბ გ დ ე ვ ზ თ ი კ ლ მ ნ ო პ ჟ რ ს ტ უ ფ ქ ღ ყ შ ჩ ც ძ წ ჭ ხ ჯ ჰ",
-  Armenian: "Ա Բ Գ Դ Ե Զ Է Ը Թ Ժ Ի Լ Խ Ծ Կ Հ Ձ Ղ Ճ Մ Յ Ն Շ Ո Չ Պ Ջ Ռ Ս Վ Տ Ր Ց Ւ Փ Ք Օ Ֆ",
-  Arabic: "أ ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن هـ و ي ٠ ١ ٢ ٣ ٤ ٥ ٦ ٧ ٨ ٩",
-  Hebrew: "א ב ג ד ה ו ז ח ט י כ ל מ נ ס ע פ צ ק ר ש ת",
-  Greek: "Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω 0 1 2 3 4 5 6 7 8 9",
-  Cyrillic: "А Б В Г Д Е Ж З И Й К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Ъ Ы Ь Э Ю Я а б в г д е ж з и й к л м н о п р с т у ф х ц ч ш щ ъ ы ь э ю я 0 1 2 3 4 5 6 7 8 9",
-  Vietnamese: "A Ă Â B C D Đ E Ê G H I K L M N O Ô Ơ P Q R S T U Ư V X Y a ă â b c d đ e ê g h i k l m n o ô ơ p q r s t u ư v x y",
-  Latin: "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9 ! @ # $ % & * ? /",
 };
 
 const popularFonts = ["Inter", "Poppins", "Roboto", "Montserrat", "Lato", "Open Sans"];
@@ -227,7 +231,7 @@ export default function FontAtlasApp() {
 
   useEffect(() => {
     ensureFontLoaded(selectedFont);
-    fonts.slice(0, 20).forEach((f) => ensureFontLoaded(f));
+    fonts.slice(0, 24).forEach((f) => ensureFontLoaded(f));
   }, [selectedFont]);
 
   const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
@@ -274,7 +278,7 @@ export default function FontAtlasApp() {
   }, [query, category, script, fontTab]);
 
   useEffect(() => {
-    filteredFonts.slice(0, 24).forEach((f) => ensureFontLoaded(f));
+    filteredFonts.slice(0, 28).forEach((f) => ensureFontLoaded(f));
   }, [filteredFonts]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -348,6 +352,7 @@ export default function FontAtlasApp() {
       });
 
       setSelectedFont(localFont);
+      setText(sampleText);
       setShowUpload(false);
       setView("fonts");
     } catch (err) {
@@ -359,9 +364,22 @@ export default function FontAtlasApp() {
     ensureFontLoaded(font);
     setSelectedFont(font);
     setWeight(font.weights.includes(400) ? 400 : font.weights[0]);
-    setText(sampleText);
+    // Automatically load the font's native script text!
+    setText(getFontDefaultText(font, script));
     setSize(48);
     setSpacing(0);
+  };
+
+  const applyScriptFilter = (s: string) => {
+    setScript(s);
+    setCategory("");
+    const firstMatching = fonts.find((f) => f.scripts.includes(s));
+    if (firstMatching) {
+      ensureFontLoaded(firstMatching);
+      setSelectedFont(firstMatching);
+      setText(getFontDefaultText(firstMatching, s));
+    }
+    nav("fonts");
   };
 
   const nav = (v: View) => {
@@ -398,13 +416,12 @@ export default function FontAtlasApp() {
     if (uploadedData?.extractedGlyphs && uploadedData.extractedGlyphs.length > 0) {
       return uploadedData.extractedGlyphs;
     }
-    for (const sc of selectedFont.scripts) {
-      if (scriptGlyphs[sc]) {
-        return scriptGlyphs[sc].split(" ");
-      }
+    const prim = getFontPrimaryScript(selectedFont, script);
+    if (scriptSpecimens[prim]?.alphabet) {
+      return scriptSpecimens[prim].alphabet.split(" ");
     }
-    return scriptGlyphs.Latin.split(" ");
-  }, [selectedFont, uploadedData]);
+    return scriptSpecimens.Latin.alphabet.split(" ");
+  }, [selectedFont, uploadedData, script]);
 
   return (
     <>
@@ -476,7 +493,7 @@ export default function FontAtlasApp() {
               Home
             </div>
             <div
-              className={`side-item${view === "fonts" && fontTab === "All" ? " active" : ""}`}
+              className={`side-item${view === "fonts" && fontTab === "All" && !script ? " active" : ""}`}
               onClick={() => {
                 setFontTab("All");
                 setCategory("");
@@ -683,7 +700,7 @@ export default function FontAtlasApp() {
                   </div>
                 </section>
 
-                {/* Browse by Category (10-Column Box Showcase) */}
+                {/* Browse by Category (10-Box Showcase) */}
                 <section className="category-section">
                   <div className="category-section-header">
                     <div className="category-section-title">Browse Fonts by Category</div>
@@ -746,6 +763,7 @@ export default function FontAtlasApp() {
                       const tagline =
                         fontTaglines[font.slug] || `${font.category} designed by ${font.designer}.`;
                       const fallback = getFontFallback(font.category);
+                      const sampleChar = getFontSampleChar(font, script);
 
                       return (
                         <div
@@ -780,7 +798,7 @@ export default function FontAtlasApp() {
                             className="font-card-center-aa"
                             style={{ fontFamily: `'${font.family}', ${fallback}` }}
                           >
-                            Aa
+                            {sampleChar}
                           </div>
 
                           <div className="font-card-tagline">{tagline}</div>
@@ -867,7 +885,7 @@ export default function FontAtlasApp() {
                 <div className="font-section-bar">
                   <div>
                     <div style={{ fontSize: "1.3rem", fontWeight: 800 }}>
-                      {category || script ? `Filtered Fonts` : `All Fonts`}
+                      {script ? `${script} Fonts (${filteredFonts.length})` : category ? `${category} Fonts (${filteredFonts.length})` : `All Fonts (${fonts.length})`}
                     </div>
                     <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
                       Showing {filteredFonts.length} of {fonts.length} curated fonts
@@ -896,7 +914,7 @@ export default function FontAtlasApp() {
                     )}
                     {script && (
                       <span className="hero-popular-chip" style={{ borderColor: "var(--accent)", color: "var(--accent)" }} onClick={() => setScript("")}>
-                        Script: {script} <X size={12} style={{ marginLeft: 4 }} />
+                        Script: {script} ({scriptSpecimens[script]?.nativeName || script}) <X size={12} style={{ marginLeft: 4 }} />
                       </span>
                     )}
                   </div>
@@ -908,6 +926,7 @@ export default function FontAtlasApp() {
                     const isFav = favorites.includes(font.slug);
                     const tagline = fontTaglines[font.slug] || `${font.category} designed by ${font.designer}.`;
                     const fallback = getFontFallback(font.category);
+                    const sampleChar = getFontSampleChar(font, script);
 
                     return (
                       <div
@@ -942,7 +961,7 @@ export default function FontAtlasApp() {
                           className="font-card-center-aa"
                           style={{ fontFamily: `'${font.family}', ${fallback}` }}
                         >
-                          Aa
+                          {sampleChar}
                         </div>
 
                         <div className="font-card-tagline">{tagline}</div>
@@ -995,7 +1014,7 @@ export default function FontAtlasApp() {
                           className="font-card-center-aa"
                           style={{ fontFamily: `'${font.family}', ${getFontFallback(font.category)}` }}
                         >
-                          Aa
+                          {getFontSampleChar(font, script)}
                         </div>
                         <div className="font-card-tagline">{fontTaglines[font.slug] || font.description}</div>
                         <div className="font-card-footer-meta">
@@ -1013,7 +1032,6 @@ export default function FontAtlasApp() {
                 <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
                   Harmonize heading and body fonts. Test readability, contrast, and visual rhythm.
                 </p>
-                {/* Interactive pairing builder */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
                   <div className="control-group">
                     <label className="control-label">
@@ -1094,25 +1112,27 @@ export default function FontAtlasApp() {
               <div>
                 <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Language & Script Coverage</h2>
                 <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
-                  Browse fonts supporting global writing systems and Unicode scripts.
+                  Browse fonts supporting global writing systems and Unicode scripts with authentic native glyphs.
                 </p>
                 <div className="category-grid-10" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))" }}>
                   {scripts.map((s) => {
                     const c = fonts.filter((f) => f.scripts.includes(s)).length;
+                    const spec = scriptSpecimens[s];
                     return (
                       <div
                         key={s}
                         className="category-box"
-                        style={{ padding: "24px 16px" }}
-                        onClick={() => {
-                          setScript(s);
-                          setCategory("");
-                          nav("fonts");
-                        }}
+                        style={{ padding: "20px 12px", cursor: "pointer" }}
+                        onClick={() => applyScriptFilter(s)}
                       >
-                        <Globe2 size={24} color="var(--accent)" style={{ marginBottom: 10 }} />
-                        <div style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: 4 }}>{s}</div>
-                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{c} fonts</div>
+                        <div style={{ fontSize: "2.2rem", fontWeight: 700, color: "var(--accent)", marginBottom: 6, lineHeight: 1 }}>
+                          {spec?.char || "Aa"}
+                        </div>
+                        <div style={{ fontSize: "0.95rem", fontWeight: 800, marginBottom: 2 }}>{s}</div>
+                        <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: 6 }}>
+                          {spec?.nativeName || s}
+                        </div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{c} fonts</div>
                       </div>
                     );
                   })}
@@ -1206,7 +1226,7 @@ export default function FontAtlasApp() {
                 </p>
                 <div className="dark-code-card" style={{ marginBottom: 24 }}>
                   <div className="dark-code-content">
-                    <pre>{`GET /api/fonts          — Complete catalog metadata (58+ fonts)\nGET /api/fonts/:slug   — Single font details\nGET /api/css/:slug     — Production CSS @import endpoint\n\nExample:\ncurl https://fontatlas.vercel.app/api/fonts/inter\ncurl https://fontatlas.vercel.app/api/css/inter`}</pre>
+                    <pre>{`GET /api/fonts          — Complete catalog metadata (70+ fonts)\nGET /api/fonts/:slug   — Single font details\nGET /api/css/:slug     — Production CSS @import endpoint\n\nExample:\ncurl https://fontatlas.vercel.app/api/fonts/noto-sans-malayalam\ncurl https://fontatlas.vercel.app/api/css/noto-sans-malayalam`}</pre>
                   </div>
                 </div>
               </div>
@@ -1242,7 +1262,7 @@ export default function FontAtlasApp() {
             </footer>
           </main>
 
-          {/* ── Right Side Font Detail Panel matching design reference ─ */}
+          {/* ── Right Side Font Detail Panel ─────────────────── */}
           <aside className="font-detail-panel">
             <div className="font-detail-top">
               <div>
@@ -1291,23 +1311,26 @@ export default function FontAtlasApp() {
               ))}
             </div>
 
-            {/* Dropdown + Custom text input bar */}
+            {/* Dropdown + Custom text input bar with native script presets */}
             <div className="specimen-text-bar">
               <select
                 className="specimen-text-dropdown"
                 onChange={(e) => {
                   const val = e.target.value;
-                  if (val === "default") setText(sampleText);
-                  else if (val === "alphabet") setText("ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz");
-                  else if (val === "numerals") setText("0123456789 $ € £ ¥ % & @ # ! ?");
-                  else if (val === "paragraph")
-                    setText("Almost before we knew it, we had left the ground. Typography inspires better interfaces.");
+                  const primScript = getFontPrimaryScript(selectedFont, script);
+                  const spec = scriptSpecimens[primScript] || scriptSpecimens.Latin;
+                  if (val === "default") setText(spec.text);
+                  else if (val === "phrase") setText(spec.phrase);
+                  else if (val === "alphabet") setText(spec.alphabet);
+                  else if (val === "numerals") setText(spec.numerals);
+                  else if (val === "english") setText("The quick brown fox jumps over the lazy dog.");
                 }}
               >
-                <option value="default">Custom text ⌄</option>
-                <option value="alphabet">Alphabet</option>
+                <option value="default">Native Specimen ({getFontPrimaryScript(selectedFont, script)}) ⌄</option>
+                <option value="phrase">Universal Declaration Phrase</option>
+                <option value="alphabet">Full Alphabet</option>
                 <option value="numerals">Numerals & Punctuation</option>
-                <option value="paragraph">Paragraph Specimen</option>
+                <option value="english">English Pangram</option>
               </select>
               <input
                 className="specimen-text-input"
@@ -1325,7 +1348,7 @@ export default function FontAtlasApp() {
                   fontSize: `${size}px`,
                   fontWeight: weight,
                   letterSpacing: `${spacing}px`,
-                  lineHeight: 1.15,
+                  lineHeight: 1.25,
                   color: "var(--text-primary)",
                 }}
               >
@@ -1437,7 +1460,7 @@ export default function FontAtlasApp() {
                         border: "1px solid var(--surface-border)",
                         borderRadius: 6,
                         fontFamily: `'${selectedFont.family}', ${selectedFallback}`,
-                        fontSize: "1rem",
+                        fontSize: "1.1rem",
                       }}
                     >
                       {ch}
@@ -1455,7 +1478,7 @@ export default function FontAtlasApp() {
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {selectedFont.scripts.map((s) => (
                     <span key={s} className="hero-popular-chip" style={{ cursor: "default" }}>
-                      {s}
+                      {s} ({scriptSpecimens[s]?.nativeName || s})
                     </span>
                   ))}
                 </div>
@@ -1491,6 +1514,7 @@ export default function FontAtlasApp() {
               <div style={{ padding: "0 28px 24px", fontSize: "0.82rem", lineHeight: 2, color: "var(--text-secondary)" }}>
                 <div><strong>Designer:</strong> {selectedFont.designer}</div>
                 <div><strong>Category:</strong> {selectedFont.category}</div>
+                <div><strong>Primary Script:</strong> {getFontPrimaryScript(selectedFont, script)}</div>
                 <div><strong>Weights:</strong> {selectedFont.weights.join(", ")}</div>
                 <div><strong>Variable Font:</strong> {selectedFont.variable ? "Yes" : "No"}</div>
               </div>
@@ -1622,7 +1646,7 @@ export default function FontAtlasApp() {
                 platform designed and built by <strong>JOJIN JOHN</strong>.
               </p>
               <p style={{ marginBottom: 14 }}>
-                It gives designers and developers instant access to over 58 curated typefaces with live specimens,
+                It gives designers and developers instant access to over 70+ curated typefaces with live specimens,
                 multilingual script support, pair testing, and copy-paste code snippets for React, Next.js, and Tailwind CSS.
               </p>
               <div style={{ padding: 14, background: "var(--bg)", borderRadius: 8, fontSize: "0.85rem" }}>
