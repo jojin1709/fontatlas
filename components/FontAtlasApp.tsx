@@ -196,6 +196,10 @@ export default function FontAtlasApp() {
   const [detailTab, setDetailTab] = useState("Preview");
   const [detailCopied, setDetailCopied] = useState(false);
   const [copiedGlyph, setCopiedGlyph] = useState<string | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(true);
+  const [pairingHeadingFont, setPairingHeadingFont] = useState<Font>(fonts[0]);
+  const [pairingBodyFont, setPairingBodyFont] = useState<Font>(() => fonts.find((f) => f.slug === "lora") || fonts[1]);
+  const [playgroundAlign, setPlaygroundAlign] = useState<"left" | "center" | "right">("left");
 
   // Local OpenType inspection data
   const [uploadedData, setUploadedData] = useState<{
@@ -231,8 +235,10 @@ export default function FontAtlasApp() {
 
   useEffect(() => {
     ensureFontLoaded(selectedFont);
+    ensureFontLoaded(pairingHeadingFont);
+    ensureFontLoaded(pairingBodyFont);
     fonts.slice(0, 24).forEach((f) => ensureFontLoaded(f));
-  }, [selectedFont]);
+  }, [selectedFont, pairingHeadingFont, pairingBodyFont]);
 
   const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
   const toggleFavorite = (slug: string) =>
@@ -363,6 +369,7 @@ export default function FontAtlasApp() {
   const selectFont = (font: Font) => {
     ensureFontLoaded(font);
     setSelectedFont(font);
+    setIsDetailOpen(true);
     setWeight(font.weights.includes(400) ? 400 : font.weights[0]);
     // Automatically load the font's native script text!
     setText(getFontDefaultText(font, script));
@@ -985,44 +992,86 @@ export default function FontAtlasApp() {
             {view === "favorites" && (
               <div>
                 <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Your Collections</h2>
-                <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
+                <p style={{ color: "var(--text-secondary)", marginBottom: 24 }}>
                   {favorites.length} saved font{favorites.length !== 1 ? "s" : ""} in your collection
                 </p>
-                <div className="font-grid">
-                  {fonts
-                    .filter((f) => favorites.includes(f.slug))
-                    .map((font) => (
-                      <div
-                        key={font.slug}
-                        className="font-card"
-                        onClick={() => selectFont(font)}
-                      >
-                        <div className="font-card-top">
-                          <span className="font-card-name">{font.family}</span>
-                          <button
-                            className="font-card-fav-btn active"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleFavorite(font.slug);
-                            }}
-                          >
-                            <Heart size={15} fill="#ef4444" stroke="#ef4444" />
-                          </button>
-                        </div>
-                        <div className="font-card-designer">{font.designer}</div>
-                        <div
-                          className="font-card-center-aa"
-                          style={{ fontFamily: `'${font.family}', ${getFontFallback(font.category)}` }}
-                        >
-                          {getFontSampleChar(font, script)}
-                        </div>
-                        <div className="font-card-tagline">{fontTaglines[font.slug] || font.description}</div>
-                        <div className="font-card-footer-meta">
-                          {font.weights.length} weights · {font.category}
-                        </div>
+                {favorites.length === 0 ? (
+                  <div className="collection-empty-card">
+                    <div className="collection-empty-icon">
+                      <Heart size={30} fill="var(--accent)" stroke="var(--accent)" />
+                    </div>
+                    <h3 className="collection-empty-title">Your collection is empty</h3>
+                    <p className="collection-empty-desc">
+                      Save fonts by clicking the heart icon on any font card or in the font inspector. Keep your project favorites organized in one place.
+                    </p>
+                    <button
+                      className="hero-search-btn"
+                      onClick={() => nav("fonts")}
+                      style={{ padding: "10px 24px", fontSize: "0.9rem" }}
+                    >
+                      Browse All Fonts →
+                    </button>
+
+                    <div className="collection-starter-wrap">
+                      <div className="collection-starter-title">Popular fonts to get started:</div>
+                      <div className="collection-starter-grid">
+                        {fonts
+                          .filter((f) => ["inter", "playfair-display", "noto-serif-malayalam", "jetbrains-mono"].includes(f.slug))
+                          .map((f) => (
+                            <div key={f.slug} className="collection-starter-card">
+                              <div style={{ cursor: "pointer" }} onClick={() => selectFont(f)}>
+                                <div style={{ fontWeight: 700, fontSize: "0.92rem", color: "var(--text-primary)" }}>{f.family}</div>
+                                <div style={{ fontSize: "0.76rem", color: "var(--text-muted)" }}>{f.category}</div>
+                              </div>
+                              <button
+                                className="collection-add-btn"
+                                onClick={() => toggleFavorite(f.slug)}
+                              >
+                                + Add
+                              </button>
+                            </div>
+                          ))}
                       </div>
-                    ))}
-                </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="font-grid">
+                    {fonts
+                      .filter((f) => favorites.includes(f.slug))
+                      .map((font) => (
+                        <div
+                          key={font.slug}
+                          className="font-card"
+                          onClick={() => selectFont(font)}
+                        >
+                          <div className="font-card-top">
+                            <span className="font-card-name">{font.family}</span>
+                            <button
+                              className="font-card-fav-btn active"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(font.slug);
+                              }}
+                              title="Remove from collection"
+                            >
+                              <Heart size={15} fill="#ef4444" stroke="#ef4444" />
+                            </button>
+                          </div>
+                          <div className="font-card-designer">{font.designer}</div>
+                          <div
+                            className="font-card-center-aa"
+                            style={{ fontFamily: `'${font.family}', ${getFontFallback(font.category)}` }}
+                          >
+                            {getFontSampleChar(font, script)}
+                          </div>
+                          <div className="font-card-tagline">{fontTaglines[font.slug] || font.description}</div>
+                          <div className="font-card-footer-meta">
+                            {font.weights.length} weights · {font.category}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -1039,10 +1088,13 @@ export default function FontAtlasApp() {
                     </label>
                     <select
                       className="control-input"
-                      value={selectedFont.slug}
+                      value={pairingHeadingFont.slug}
                       onChange={(e) => {
                         const f = fonts.find((item) => item.slug === e.target.value);
-                        if (f) selectFont(f);
+                        if (f) {
+                          setPairingHeadingFont(f);
+                          ensureFontLoaded(f);
+                        }
                       }}
                     >
                       {fonts.map((f) => (
@@ -1058,7 +1110,14 @@ export default function FontAtlasApp() {
                     </label>
                     <select
                       className="control-input"
-                      defaultValue="lora"
+                      value={pairingBodyFont.slug}
+                      onChange={(e) => {
+                        const f = fonts.find((item) => item.slug === e.target.value);
+                        if (f) {
+                          setPairingBodyFont(f);
+                          ensureFontLoaded(f);
+                        }
+                      }}
                     >
                       {fonts.map((f) => (
                         <option key={f.slug} value={f.slug}>
@@ -1079,18 +1138,18 @@ export default function FontAtlasApp() {
                 >
                   <div
                     style={{
-                      fontFamily: `'${selectedFont.family}', ${selectedFallback}`,
-                      fontSize: "48px",
+                      fontFamily: `'${pairingHeadingFont.family}', ${getFontFallback(pairingHeadingFont.category)}`,
+                      fontSize: "44px",
                       fontWeight: 700,
                       marginBottom: 16,
-                      lineHeight: 1.15,
+                      lineHeight: 1.18,
                     }}
                   >
                     Build something remarkable.
                   </div>
                   <p
                     style={{
-                      fontFamily: `'Lora', serif`,
+                      fontFamily: `'${pairingBodyFont.family}', ${getFontFallback(pairingBodyFont.category)}`,
                       fontSize: "18px",
                       lineHeight: 1.7,
                       color: "var(--text-secondary)",
@@ -1101,9 +1160,32 @@ export default function FontAtlasApp() {
                     Typography is part of the product. The harmony between your display headline and your long-form
                     body text sets the emotional tone of your entire application.
                   </p>
-                  <button className="btn btn-primary" onClick={handleCopyCode}>
-                    Copy Pairing Styles
-                  </button>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => {
+                        const css = `/* Heading */\nh1, h2, h3 {\n  font-family: '${pairingHeadingFont.family}', ${getFontFallback(pairingHeadingFont.category)};\n}\n\n/* Body */\nbody, p {\n  font-family: '${pairingBodyFont.family}', ${getFontFallback(pairingBodyFont.category)};\n}`;
+                        navigator.clipboard.writeText(css);
+                        setDetailCopied(true);
+                        setTimeout(() => setDetailCopied(false), 2000);
+                      }}
+                    >
+                      {detailCopied ? "Copied CSS!" : "Copy Pairing CSS"}
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => {
+                        const popularHeadings = fonts.filter((f) => ["playfair-display", "space-mono", "poppins", "montserrat", "bebas-neue", "cormorant-garamond"].includes(f.slug));
+                        const popularBodies = fonts.filter((f) => ["inter", "lora", "source-sans-3", "roboto", "merriweather", "dm-sans"].includes(f.slug));
+                        const randH = popularHeadings[Math.floor(Math.random() * popularHeadings.length)];
+                        const randB = popularBodies[Math.floor(Math.random() * popularBodies.length)];
+                        if (randH) { setPairingHeadingFont(randH); ensureFontLoaded(randH); }
+                        if (randB) { setPairingBodyFont(randB); ensureFontLoaded(randB); }
+                      }}
+                    >
+                      <RefreshCw size={14} style={{ marginRight: 6 }} /> Shuffle Pairing
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -1142,16 +1224,62 @@ export default function FontAtlasApp() {
 
             {view === "playground" && (
               <div>
-                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 8 }}>Design Playground</h2>
-                <p style={{ color: "var(--text-secondary)", marginBottom: 32 }}>
-                  Experiment with {selectedFont.family} across sizes, weights, and letter-spacings.
-                </p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginBottom: 20 }}>
+                  <div>
+                    <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: 4 }}>Design Playground</h2>
+                    <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                      Experiment with typography, font sizes, alignments, and custom text.
+                    </p>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <select
+                      className="control-input"
+                      value={selectedFont.slug}
+                      onChange={(e) => {
+                        const f = fonts.find((item) => item.slug === e.target.value);
+                        if (f) selectFont(f);
+                      }}
+                      style={{ padding: "6px 12px", minWidth: 200 }}
+                    >
+                      {fonts.map((f) => (
+                        <option key={f.slug} value={f.slug}>
+                          {f.family} ({f.category})
+                        </option>
+                      ))}
+                    </select>
+                    <div style={{ display: "flex", border: "1px solid var(--surface-border)", borderRadius: "var(--radius-sm)", overflow: "hidden" }}>
+                      <button
+                        style={{ padding: "6px 10px", background: playgroundAlign === "left" ? "var(--accent)" : "var(--surface)", color: playgroundAlign === "left" ? "#fff" : "var(--text-secondary)", cursor: "pointer", border: "none" }}
+                        onClick={() => setPlaygroundAlign("left")}
+                        title="Align left"
+                      >
+                        <AlignLeft size={16} />
+                      </button>
+                      <button
+                        style={{ padding: "6px 10px", background: playgroundAlign === "center" ? "var(--accent)" : "var(--surface)", color: playgroundAlign === "center" ? "#fff" : "var(--text-secondary)", cursor: "pointer", border: "none" }}
+                        onClick={() => setPlaygroundAlign("center")}
+                        title="Align center"
+                      >
+                        <AlignCenter size={16} />
+                      </button>
+                      <button
+                        style={{ padding: "6px 10px", background: playgroundAlign === "right" ? "var(--accent)" : "var(--surface)", color: playgroundAlign === "right" ? "#fff" : "var(--text-secondary)", cursor: "pointer", border: "none" }}
+                        onClick={() => setPlaygroundAlign("right")}
+                        title="Align right"
+                      >
+                        <AlignRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <div
                   style={{
                     background: "var(--surface)",
                     border: "1px solid var(--surface-border)",
                     borderRadius: "var(--radius-lg)",
-                    padding: 40,
+                    padding: 32,
+                    boxShadow: "var(--shadow-sm)",
                   }}
                 >
                   <textarea
@@ -1161,11 +1289,18 @@ export default function FontAtlasApp() {
                       fontSize: `${size}px`,
                       fontWeight: weight,
                       letterSpacing: `${spacing}px`,
+                      textAlign: playgroundAlign,
                       color: "var(--text-primary)",
-                      minHeight: 180,
+                      minHeight: 220,
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      resize: "vertical",
+                      lineHeight: 1.3,
                     }}
                     value={text}
                     onChange={(e) => setText(e.target.value)}
+                    placeholder="Type anything here..."
                   />
                 </div>
               </div>
@@ -1263,147 +1398,173 @@ export default function FontAtlasApp() {
           </main>
 
           {/* ── Right Side Font Detail Panel ─────────────────── */}
-          <aside className="font-detail-panel">
-            <div className="font-detail-top">
-              <div>
-                <div className="font-detail-family">
-                  {selectedFont.family}
-                  {selectedFont.variable && <span className="badge-variable">Variable</span>}
+          {isDetailOpen && (
+            <aside className="font-detail-panel">
+              <div className="font-detail-top">
+                <div>
+                  <div className="font-detail-family">
+                    {selectedFont.family}
+                    {selectedFont.variable && <span className="badge-variable">Variable</span>}
+                  </div>
+                  <div className="font-detail-author">Designed by {selectedFont.designer}</div>
                 </div>
-                <div className="font-detail-author">Designed by {selectedFont.designer}</div>
-              </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <button
-                  className={`font-card-fav-btn${favorites.includes(selectedFont.slug) ? " active" : ""}`}
-                  style={{ width: 34, height: 34, border: "1px solid var(--surface-border)" }}
-                  onClick={() => toggleFavorite(selectedFont.slug)}
-                  title={favorites.includes(selectedFont.slug) ? "Remove favorite" : "Add to favorites"}
-                >
-                  <Heart
-                    size={16}
-                    fill={favorites.includes(selectedFont.slug) ? "#ef4444" : "none"}
-                    stroke={favorites.includes(selectedFont.slug) ? "#ef4444" : "currentColor"}
-                  />
-                </button>
-
-                {selectedFont.sourceUrl ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <button
-                    className="btn-download-dark"
-                    onClick={() => window.open(selectedFont.sourceUrl, "_blank", "noopener,noreferrer")}
+                    className={`font-card-fav-btn${favorites.includes(selectedFont.slug) ? " active" : ""}`}
+                    style={{ width: 34, height: 34, border: "1px solid var(--surface-border)" }}
+                    onClick={() => toggleFavorite(selectedFont.slug)}
+                    title={favorites.includes(selectedFont.slug) ? "Remove favorite" : "Add to favorites"}
                   >
-                    <Download size={15} /> Download
+                    <Heart
+                      size={16}
+                      fill={favorites.includes(selectedFont.slug) ? "#ef4444" : "none"}
+                      stroke={favorites.includes(selectedFont.slug) ? "#ef4444" : "currentColor"}
+                    />
                   </button>
-                ) : null}
-              </div>
-            </div>
 
-            {/* Underline Tabs matching design reference */}
-            <div className="detail-nav-tabs">
-              {["Preview", "Glyphs", "Languages", "Weights", "Metadata", "License"].map((t) => (
+                  {selectedFont.sourceUrl ? (
+                    <button
+                      className="btn-download-dark"
+                      onClick={() => window.open(selectedFont.sourceUrl, "_blank", "noopener,noreferrer")}
+                    >
+                      <Download size={15} /> Download
+                    </button>
+                  ) : null}
+
+                  <button
+                    className="font-detail-close-btn"
+                    onClick={() => setIsDetailOpen(false)}
+                    title="Close inspector"
+                    aria-label="Close inspector"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Underline Tabs matching design reference */}
+              <div className="detail-nav-tabs">
+                {["Preview", "Glyphs", "Languages", "Weights", "Metadata", "License"].map((t) => (
+                  <div
+                    key={t}
+                    className={`detail-nav-tab${detailTab === t ? " active" : ""}`}
+                    onClick={() => setDetailTab(t)}
+                  >
+                    {t}
+                  </div>
+                ))}
+              </div>
+
+              {/* Structured Specimen Toolbar with Script Badge and Full-width Input */}
+              <div className="specimen-toolbar-wrap">
+                <div className="specimen-toolbar-header">
+                  <span className="specimen-badge">
+                    {getFontPrimaryScript(selectedFont, script)} ({scriptSpecimens[getFontPrimaryScript(selectedFont, script)]?.nativeName || "Native"})
+                  </span>
+                  <select
+                    className="specimen-preset-select"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const primScript = getFontPrimaryScript(selectedFont, script);
+                      const spec = scriptSpecimens[primScript] || scriptSpecimens.Latin;
+                      if (val === "default") setText(spec.text);
+                      else if (val === "phrase") setText(spec.phrase);
+                      else if (val === "alphabet") setText(spec.alphabet);
+                      else if (val === "numerals") setText(spec.numerals);
+                      else if (val === "english") setText("The quick brown fox jumps over the lazy dog.");
+                    }}
+                  >
+                    <option value="default">Preset: Native Specimen</option>
+                    <option value="phrase">Universal Declaration</option>
+                    <option value="alphabet">Full Alphabet</option>
+                    <option value="numerals">Numerals & Symbols</option>
+                    <option value="english">English Pangram</option>
+                  </select>
+                </div>
+                <div className="specimen-input-row">
+                  <input
+                    className="specimen-text-input-field"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Type anything to preview..."
+                  />
+                  {text && (
+                    <button
+                      className="specimen-input-clear"
+                      onClick={() => setText("")}
+                      title="Clear text"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Live Specimen Preview */}
+              <div className="specimen-live-display">
                 <div
-                  key={t}
-                  className={`detail-nav-tab${detailTab === t ? " active" : ""}`}
-                  onClick={() => setDetailTab(t)}
+                  style={{
+                    fontFamily: `'${selectedFont.family}', ${selectedFallback}`,
+                    fontSize: `${size}px`,
+                    fontWeight: weight,
+                    letterSpacing: `${spacing}px`,
+                    lineHeight: 1.25,
+                    color: "var(--text-primary)",
+                  }}
                 >
-                  {t}
+                  {text || sampleText}
                 </div>
-              ))}
-            </div>
-
-            {/* Dropdown + Custom text input bar with native script presets */}
-            <div className="specimen-text-bar">
-              <select
-                className="specimen-text-dropdown"
-                onChange={(e) => {
-                  const val = e.target.value;
-                  const primScript = getFontPrimaryScript(selectedFont, script);
-                  const spec = scriptSpecimens[primScript] || scriptSpecimens.Latin;
-                  if (val === "default") setText(spec.text);
-                  else if (val === "phrase") setText(spec.phrase);
-                  else if (val === "alphabet") setText(spec.alphabet);
-                  else if (val === "numerals") setText(spec.numerals);
-                  else if (val === "english") setText("The quick brown fox jumps over the lazy dog.");
-                }}
-              >
-                <option value="default">Native Specimen ({getFontPrimaryScript(selectedFont, script)}) ⌄</option>
-                <option value="phrase">Universal Declaration Phrase</option>
-                <option value="alphabet">Full Alphabet</option>
-                <option value="numerals">Numerals & Punctuation</option>
-                <option value="english">English Pangram</option>
-              </select>
-              <input
-                className="specimen-text-input"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Type custom text..."
-              />
-            </div>
-
-            {/* Live Specimen Preview */}
-            <div className="specimen-live-display">
-              <div
-                style={{
-                  fontFamily: `'${selectedFont.family}', ${selectedFallback}`,
-                  fontSize: `${size}px`,
-                  fontWeight: weight,
-                  letterSpacing: `${spacing}px`,
-                  lineHeight: 1.25,
-                  color: "var(--text-primary)",
-                }}
-              >
-                {text || sampleText}
-              </div>
-            </div>
-
-            {/* 3 Slider Columns matching design reference */}
-            <div className="slider-three-col">
-              <div>
-                <div className="slider-col-header">
-                  <span>Size</span>
-                  <span className="slider-pill-val">{size}px ⌄</span>
-                </div>
-                <input
-                  className="control-slider"
-                  type="range"
-                  min={16}
-                  max={96}
-                  value={size}
-                  onChange={(e) => setSize(Number(e.target.value))}
-                />
               </div>
 
-              <div>
-                <div className="slider-col-header">
-                  <span>Weight</span>
-                  <span className="slider-pill-val">{weight} ⌄</span>
+              {/* 3 Slider Columns */}
+              <div className="slider-three-col">
+                <div>
+                  <div className="slider-col-header">
+                    <span>Size</span>
+                    <span className="slider-pill-val">{size}px</span>
+                  </div>
+                  <input
+                    className="control-slider"
+                    type="range"
+                    min={16}
+                    max={96}
+                    value={size}
+                    onChange={(e) => setSize(Number(e.target.value))}
+                  />
                 </div>
-                <input
-                  className="control-slider"
-                  type="range"
-                  min={100}
-                  max={900}
-                  step={100}
-                  value={weight}
-                  onChange={(e) => setWeight(Number(e.target.value))}
-                />
-              </div>
 
-              <div>
-                <div className="slider-col-header">
-                  <span>Letter spacing</span>
-                  <span className="slider-pill-val">{spacing}px ⌄</span>
+                <div>
+                  <div className="slider-col-header">
+                    <span>Weight</span>
+                    <span className="slider-pill-val">{weight}</span>
+                  </div>
+                  <input
+                    className="control-slider"
+                    type="range"
+                    min={100}
+                    max={900}
+                    step={100}
+                    value={weight}
+                    onChange={(e) => setWeight(Number(e.target.value))}
+                  />
                 </div>
-                <input
-                  className="control-slider"
-                  type="range"
-                  min={-4}
-                  max={16}
-                  value={spacing}
-                  onChange={(e) => setSpacing(Number(e.target.value))}
-                />
+
+                <div>
+                  <div className="slider-col-header">
+                    <span>Spacing</span>
+                    <span className="slider-pill-val">{spacing}px</span>
+                  </div>
+                  <input
+                    className="control-slider"
+                    type="range"
+                    min={-4}
+                    max={16}
+                    value={spacing}
+                    onChange={(e) => setSpacing(Number(e.target.value))}
+                  />
+                </div>
               </div>
-            </div>
 
             {/* Quick Use Code Box matching design reference */}
             <div className="quick-use-section">
@@ -1535,8 +1696,21 @@ export default function FontAtlasApp() {
                 )}
               </div>
             )}
-          </aside>
+            </aside>
+          )}
         </div>
+
+        {/* Floating Re-Open Button when detail drawer is closed */}
+        {!isDetailOpen && (
+          <button
+            className="floating-inspect-btn"
+            onClick={() => setIsDetailOpen(true)}
+            title={`Inspect ${selectedFont.family}`}
+          >
+            <SlidersHorizontal size={15} />
+            <span>Inspect <strong>{selectedFont.family}</strong></span>
+          </button>
+        )}
       </div>
 
       {/* ── Modals ─────────────────────────────────────────── */}
